@@ -35,10 +35,43 @@ ipizza.get = function (key) {
 }
 
 
+ipizza.provider = function (provider, opt) {
+  if (typeof provider !== 'string') opt.provider = opt
+  else opt = provider
+  
+}
+
+ipizza.payment = function (provider, opt) {
+  if (typeof provider !== 'string') opt.provider = opt
+  else opt = provider
+  
+  
+}
+
+ipizza.response = function (provider, cb) {
+  
+}
+
+ipizza.define = function (provider, klass) {
+  
+}
+
 ipizza.set({ appHandler: null
            , hostname: require('os').hostname()
            , logLevel: process.env.NODE_ENV == 'production' ? 'info' : 'verbose'
            , env: process.env.NODE_ENV || 'development'
            })
+
+ipizza.define('swedbank', require(__dirname + '/providers/swedbank.js'))
+/*
+ipizza.define('swedbank_est', require(__dirname + '/providers/swedbank.js'))
+ipizza.define('swedbank_lat', require(__dirname + '/providers/swedbank_lat.js'))
+ipizza.define('swedbank_ltl', require(__dirname + '/providers/swedbank_ltl.js'))
+ipizza.define('lhv', require(__dirname + '/providers/lhv.js'))
+ipizza.define('seb', require(__dirname + '/providers/seb.js'))
+ipizza.define('sampo', require(__dirname + '/providers/sampo.js'))
+ipizza.define('krediidipank', require(__dirname + '/providers/krediidipank.js'))
+ipizza.define('nordea', require(__dirname + '/providers/nordea.js'))
+*/
 
 module.exports = ipizza
