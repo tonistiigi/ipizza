@@ -1,0 +1,27 @@
+{
+  "name": "ipizza",
+  "version": "0.0.0",
+  "description": "Node.js implementation for Estonian(and some other) banklink payments.",
+  "main": "ipizza.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tonistiigi/ipizza.git"
+  },
+  "keywords": [
+    "ipizza",
+    "payments",
+    "swedbank",
+    "seb",
+    "nordea",
+    "sampo"
+  ],
+  "author": "Tõnis Tiigi",
+  "license": "MIT",
+  "dependencies": {
+    "npmlog": "0.0.2",
+    "string": "~0.2.1-2"
+  }
+}
