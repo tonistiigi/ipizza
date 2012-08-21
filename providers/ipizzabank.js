@@ -1,8 +1,12 @@
-var S = require('string'),
-    log = require('npmlog')
+var crypto = require('crypto')
+  , fs = require('fs')
+  , S = require('string')
+  , log = require('npmlog')
+  , _ = require('underscore')._
 
 function IpizzaBank (opt) {
-  this.opt = opt
+  this.opt = {}
+  this.set(opt)
 }
 IpizzaBank.prototype = Object.create(require('events').EventEmitter.prototype)
 
@@ -37,6 +41,25 @@ IpizzaBank.services =
           }
   }
 
+IpizzaBank.prototype.set = function (key, val) {
+  if (typeof key !== 'string') {
+    for (var i in key) {
+      if (key.hasOwnProperty(i)) this.set(i, key[i])
+    }
+    return
+  }
+  
+  key = S(key).camelize().toString()
+  if (key == 'privateKey') val = fs.readFileSync(val)
+  this.opt[key] = val
+}
+
+IpizzaBank.prototype.get = function (key) {
+  if (!arguments.length) return this.opt
+  key = S(key).camelize().toString()
+  return this.opt[key]
+}
+
 
 IpizzaBank.prototype.json = function () {
   var params = _.clone(IpizzaBank.services[1002])
@@ -58,17 +81,23 @@ IpizzaBank.prototype.json = function () {
   if (this.get('lang')) params['VK_LANG'] = this.get('lang')
   if (this.get('encoding')) params['VK_ENCODING'] = this.get('encoding')
   
-  params['VK_MAC'] = this.genMac_()
+  params['VK_MAC'] = this.genMac_(params)
+  params['VK_RETURN'] = 'http://localhost:4000/'
+  return params
 }
 
 IpizzaBank.prototype.genMac_ = function (params) {
   var pack = _.reduce(params, function (memo, val, key) {
     val = val.toString()
-    if (!~['VK_MAC', 'VK_RETURN', 'VK_LANG', 'VK_ENCODING']) {
-      pack += S('0').repeat(3 - val.length.toString().length).toString()
-        + val.length.toString().length + val
+    if (!~['VK_MAC', 'VK_RETURN', 'VK_LANG', 'VK_ENCODING'].indexOf(key)) {
+      memo += S('0').repeat(3 - val.length.toString().length).toString()
+        + val.length + val
     }
+    return memo
   }, '')
-  
-  return pack
+  var signer = crypto.createSign('RSA-SHA1')
+  signer.update(pack)
+  return signer.sign(this.get('privateKey').toString('utf8'), 'base64')
 }
+
+module.exports = IpizzaBank

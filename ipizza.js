@@ -1,8 +1,10 @@
 var S = require('string')
   , log = require('npmlog')
+  , _ = require('underscore')._
 
 var ipizza = Object.create(require('events').EventEmitter.prototype)
   , opt = {}
+  , providers = {}
 
 log.heading = 'ipizza'
 log.stream = process.stdout
@@ -39,13 +41,21 @@ ipizza.provider = function (provider, opt) {
   if (typeof provider === 'string') opt.provider = opt
   else opt = provider
   
+  providers[provider].opt = opt
+  
 }
 
 ipizza.payment = function (provider, opt) {
   if (typeof provider === 'string') opt.provider = opt
   else opt = provider
   
-  
+  if (!providers[opt.provider]) {
+    winston.error('No provider %s set up', opt.provider)
+    return
+  }
+  var payment = new providers[opt.provider].klass(
+    _.extend({}, providers[opt.provider].opt, opt))
+  return payment
 }
 
 ipizza.response = function (provider, cb) {
@@ -53,7 +63,7 @@ ipizza.response = function (provider, cb) {
 }
 
 ipizza.define = function (provider, klass) {
-  
+  providers[provider] = {klass: klass, opt: {}}
 }
 
 ipizza.set({ appHandler: null

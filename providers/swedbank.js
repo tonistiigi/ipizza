@@ -2,7 +2,8 @@ var IpizzaBank = require('./ipizzabank')
 
 function Swedbank (opt) {
   this.name = 'swedbank'
-  IpizzaBank.super.apply(this, arguments)
+  IpizzaBank.apply(this, arguments)
 }
-IpizzaBank.prototype = Object.create(require('events').EventEmitter.prototype)
+Swedbank.prototype = Object.create(IpizzaBank.prototype)
 
+module.exports = Swedbank
