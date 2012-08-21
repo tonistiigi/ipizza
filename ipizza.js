@@ -36,13 +36,13 @@ ipizza.get = function (key) {
 
 
 ipizza.provider = function (provider, opt) {
-  if (typeof provider !== 'string') opt.provider = opt
+  if (typeof provider === 'string') opt.provider = opt
   else opt = provider
   
 }
 
 ipizza.payment = function (provider, opt) {
-  if (typeof provider !== 'string') opt.provider = opt
+  if (typeof provider === 'string') opt.provider = opt
   else opt = provider
   
   
