@@ -23,7 +23,6 @@ function setupAppHandler() {
       }
     })
   }
-  
 }
 
 ipizza.set = function (key, val) {
@@ -77,7 +76,13 @@ ipizza.payment = function (provider, opt) {
 }
 
 ipizza.response = function (provider, req, resp) {
-  resp.end('asd')
+  if (providers[provider]) {
+    var payment = new providers[provider].klass(providers[provider].opt)
+    payment.response(req, resp)
+  }
+  else {
+    log.error('Can\'t send response to %s. No such provider setup.', provider)
+  }
 }
 
 ipizza.define = function (provider, klass) {

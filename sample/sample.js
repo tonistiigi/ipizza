@@ -1,6 +1,7 @@
 var express = require('express')
 var app = express()
 
+app.use(express.bodyParser())
 
 var ipizza = require('ipizza')
 
@@ -9,25 +10,27 @@ ipizza.set('appHandler', app)
 
 
 ipizza.provider('swedbank',
-  { clientId: 'uid202196'
-  , privateKey: __dirname + '/keys/swedbank.key.pem'
-  , certificate: __dirname + '/keys/swedbank.cert.pem'
-  , url: 'https://pangalink.net/banklink/008/swedbank'
+  { clientId: 'klient8167'
+  , privateKey: __dirname + '/keys/my_private_key.pem'
+  , certificate: __dirname + '/keys/bank_certificate.pem'
+  , url: 'https://pangalink.net/banklink/008/ipizza'
   })
 
 
 
 app.get('/', function (req, res) {
   var data = { provider: 'swedbank'
-             , amount: 19
-             , id: 1234
-             , ref: 121312952
-             , msg: 'goods'
+             , amount: 0.05
+             , id: 12345
+             , ref: ''
+             , msg: 'Torso Tiger'
+             , account: 1234567890
+             , accountName: 'PANGAKONTO OMANIK'
              }
 
   var params = ipizza.payment(data).json()
   res.set('Content-Type', 'text/html')
-  res.write('<form action="https://pangalink.net/banklink/008/swedbank" method="post"><input type="submit">');
+  res.write('<form action="https://pangalink.net/banklink/008/ipizza" method="post"><input type="submit">');
   for (var i in params) {
     res.write('<input type="text" name="'+i+'" value="'+params[i]+'">');
   }
