@@ -4,6 +4,10 @@ var app = express()
 
 var ipizza = require('ipizza')
 
+ipizza.set('hostname', 'http://localhost:4000')
+ipizza.set('appHandler', app)
+
+
 ipizza.provider('swedbank',
   { clientId: 'uid202196'
   , privateKey: __dirname + '/keys/swedbank.key.pem'

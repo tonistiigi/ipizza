@@ -5,9 +5,26 @@ var S = require('string')
 var ipizza = Object.create(require('events').EventEmitter.prototype)
   , opt = {}
   , providers = {}
+  , routes = {}
 
 log.heading = 'ipizza'
 log.stream = process.stdout
+
+function setupAppHandler() {
+  var app = ipizza.get('appHandler')
+    , response = ipizza.get('response') 
+  if (app && response) {
+    _.forEach(providers, function (v, k) {
+      var route = response + '/' + k
+      if (!routes[route]) {
+        app.all(route, function (req, resp) {
+          ipizza.response(k, req, resp)
+        })
+      }
+    })
+  }
+  
+}
 
 ipizza.set = function (key, val) {
   if (typeof key !== 'string') {
@@ -19,9 +36,11 @@ ipizza.set = function (key, val) {
   
   key = S(key).camelize().toString()
   
-  if (key === 'logLevel') log.level = key
-
   opt[key] = val
+  
+  if (key === 'logLevel') log.level = key
+  if (key === 'appHander' || key === 'response') setupAppHandler()
+  
 
 }
 
@@ -36,13 +55,12 @@ ipizza.get = function (key) {
   return opt[key]
 }
 
-
 ipizza.provider = function (provider, opt) {
   if (typeof provider === 'string') opt.provider = opt
   else opt = provider
   
   providers[provider].opt = opt
-  
+  setupAppHandler()
 }
 
 ipizza.payment = function (provider, opt) {
@@ -58,8 +76,8 @@ ipizza.payment = function (provider, opt) {
   return payment
 }
 
-ipizza.response = function (provider, cb) {
-  
+ipizza.response = function (provider, req, resp) {
+  resp.end('asd')
 }
 
 ipizza.define = function (provider, klass) {
@@ -67,7 +85,8 @@ ipizza.define = function (provider, klass) {
 }
 
 ipizza.set({ appHandler: null
-           , hostname: require('os').hostname()
+           , response: '/api/payment/response'
+           , hostname: 'http://' + require('os').hostname()
            , logLevel: process.env.NODE_ENV == 'production' ? 'info' : 'verbose'
            , env: process.env.NODE_ENV || 'development'
            })

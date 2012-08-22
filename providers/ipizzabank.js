@@ -82,7 +82,9 @@ IpizzaBank.prototype.json = function () {
   if (this.get('encoding')) params['VK_ENCODING'] = this.get('encoding')
   
   params['VK_MAC'] = this.genMac_(params)
-  params['VK_RETURN'] = 'http://localhost:4000/'
+  var ipizza = require('ipizza')
+  params['VK_RETURN'] = ipizza.get('hostname') + ipizza.get('response') + '/'
+    + this.get('provider')
   return params
 }
 
