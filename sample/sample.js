@@ -17,10 +17,16 @@ ipizza.provider('swedbank',
   , gateway: 'https://pangalink.net/banklink/008/swedbank'
   })
 
+ipizza.provider('seb',
+  { clientId: 'uid203519'
+  , privateKey: __dirname + '/keys/seb.key.pem'
+  , certificate: __dirname + '/keys/seb.cert.pem'
+  })
+
 
 
 app.get('/', function (req, res) {
-  var data = { provider: 'swedbank'
+  var data = { provider: 'seb'
              , amount: 19
              , id: 1234
              , ref: 121312952
@@ -29,7 +35,7 @@ app.get('/', function (req, res) {
 
   var params = ipizza.payment(data).json()
   res.set('Content-Type', 'text/html')
-  res.write('<form action="https://pangalink.net/banklink/008/swedbank" method="post"><input type="submit">');
+  res.write('<form action="https://pangalink.net/banklink/008/seb" method="post"><input type="submit">');
   for (var i in params) {
     res.write('<input type="text" name="'+i+'" value="'+params[i]+'">');
   }

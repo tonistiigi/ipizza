@@ -55,11 +55,15 @@ ipizza.get = function (key) {
 }
 
 ipizza.provider = function (provider, opt) {
-  if (typeof provider === 'string') opt.provider = opt
+  if (typeof provider === 'string') opt.provider = provider
   else opt = provider
-  
-  providers[provider].opt = opt
-  setupAppHandler()
+  if (!providers[opt.provider]) {
+    log.error('provider setup', 'No such provider %s', opt.provider)
+  }
+  else {
+    providers[opt.provider].opt = opt
+    setupAppHandler()
+  }
 }
 
 ipizza.payment = function (provider, opt) {
@@ -97,6 +101,8 @@ ipizza.set({ appHandler: null
            })
 
 ipizza.define('swedbank', require(__dirname + '/providers/swedbank.js'))
+ipizza.define('seb', require(__dirname + '/providers/seb.js'))
+
 /*
 ipizza.define('swedbank_est', require(__dirname + '/providers/swedbank.js'))
 ipizza.define('swedbank_lat', require(__dirname + '/providers/swedbank_lat.js'))

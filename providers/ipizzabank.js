@@ -1,4 +1,5 @@
-var crypto = require('crypto')
+var Buffer = require('buffer').Buffer
+  , crypto = require('crypto')
   , fs = require('fs')
   , S = require('string')
   , log = require('npmlog')
@@ -25,6 +26,7 @@ IpizzaBank.services =
           , VK_RETURN: ''
           , VK_LANG: 'ENG'
           , VK_ENCODING: 'UTF-8'
+          , VK_CHARSET: 'UTF-8'
           }
   , 1002: { VK_SERVICE: 1002
           , VK_VERSION: '008'
@@ -38,6 +40,7 @@ IpizzaBank.services =
           , VK_RETURN: ''
           , VK_LANG: 'ENG'
           , VK_ENCODING: 'UTF-8'
+          , VK_CHARSET: 'UTF-8'
           }
   , 1101: { VK_SERVICE: true
           , VK_VERSION: true
@@ -112,7 +115,13 @@ IpizzaBank.prototype.json = function () {
   if (this.get('curr')) params['VK_CURR'] = this.get('curr')
   if (this.get('return')) params['VK_RETURN'] = this.get('return')
   if (this.get('lang')) params['VK_LANG'] = this.get('lang')
-  if (this.get('encoding')) params['VK_ENCODING'] = this.get('encoding')
+  if (this.get('encoding')) {
+    params['VK_ENCODING'] = params['VK_CHARSET'] = this.get('encoding')
+  } 
+  
+  if (this.name == 'swedbank') delete params['VK_CHARSET']
+  if (this.name == 'seb') delete params['VK_ENCODING']
+  
   
   params['VK_MAC'] = this.genMac_(params)
 
@@ -127,15 +136,16 @@ IpizzaBank.prototype.json = function () {
 IpizzaBank.prototype.genPackage_ = function (params) {
   return _.reduce(params, function (memo, val, key) {
     val = val.toString()
-    memo += S('0').repeat(3 - val.length.toString().length).toString()
-      + val.length + val
+    var len = Buffer.byteLength(val, 'utf8')
+    memo += S('0').repeat(3 - len.toString().length).toString()
+      + len + val
     return memo
   }, '')
 }
 
 IpizzaBank.prototype.genMac_ = function (params) {
   var pack = this.genPackage_(_.reduce(params, function (memo, val, key) {
-    if (!~['VK_MAC', 'VK_RETURN', 'VK_LANG', 'VK_ENCODING'].indexOf(key)) {
+    if (!~['VK_MAC', 'VK_RETURN', 'VK_LANG', 'VK_ENCODING', 'VK_CHARSET'].indexOf(key)) {
       memo[key] = val
     }
     return memo
@@ -147,6 +157,7 @@ IpizzaBank.prototype.genMac_ = function (params) {
 }
 
 IpizzaBank.prototype.response = function (req, resp) {
+  log.verbose('resp body', req.body)
   var service = req.body.VK_SERVICE
     , cert = this.get('certificate').toString('utf8')
   var pack = this.genPackage_(_.reduce(IpizzaBank.services[service],
@@ -156,7 +167,7 @@ IpizzaBank.prototype.response = function (req, resp) {
       }
       return memo
     }, {}))
-  if (req.body.VK_ENCODING === 'UTF-8') {
+  if (req.body.VK_ENCODING === 'UTF-8' || req.body.VK_CHARSET == 'UTF-8') {
     var Iconv  = require('iconv').Iconv
       , iconv = new Iconv('ISO-8859-1', 'UTF-8');
     pack = iconv.convert(pack).toString('utf8');
