@@ -23,7 +23,8 @@
   "dependencies": {
     "npmlog": "0.0.2",
     "string": "~0.2.1-2",
-    "underscore": "~1.3.3"
+    "underscore": "~1.3.3",
+    "iconv": "~1.2.3"
   },
   "devDependencies": {
     "express": "~3.0.0rc3"
