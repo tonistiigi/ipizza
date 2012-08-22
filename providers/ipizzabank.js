@@ -24,7 +24,7 @@ IpizzaBank.services =
           , VK_MAC: ''
           , VK_RETURN: ''
           , VK_LANG: 'ENG'
-          //, VK_ENCODING: 'UTF-8'
+          , VK_ENCODING: 'UTF-8'
           }
   , 1002: { VK_SERVICE: 1002
           , VK_VERSION: '008'
@@ -37,7 +37,7 @@ IpizzaBank.services =
           , VK_MAC: ''
           , VK_RETURN: ''
           , VK_LANG: 'ENG'
-          //, VK_ENCODING: 'UTF-8'
+          , VK_ENCODING: 'UTF-8'
           }
   , 1101: { VK_SERVICE: true
           , VK_VERSION: true
@@ -115,6 +115,9 @@ IpizzaBank.prototype.json = function () {
   if (this.get('encoding')) params['VK_ENCODING'] = this.get('encoding')
   
   params['VK_MAC'] = this.genMac_(params)
+
+  log.verbose('req mac', params['VK_MAC'])
+  
   var ipizza = require('ipizza')
   params['VK_RETURN'] = ipizza.get('hostname') + ipizza.get('response') + '/'
     + this.get('provider')
@@ -122,7 +125,6 @@ IpizzaBank.prototype.json = function () {
 }
 
 IpizzaBank.prototype.genPackage_ = function (params) {
-  console.log(params)
   return _.reduce(params, function (memo, val, key) {
     val = val.toString()
     memo += S('0').repeat(3 - val.length.toString().length).toString()
@@ -138,14 +140,15 @@ IpizzaBank.prototype.genMac_ = function (params) {
     }
     return memo
   }, {}))
+  log.verbose('req package', pack)
   var signer = crypto.createSign('RSA-SHA1')
   signer.update(pack)
   return signer.sign(this.get('privateKey').toString('utf8'), 'base64')
 }
 
 IpizzaBank.prototype.response = function (req, resp) {
-  console.log(req.body)
   var service = req.body.VK_SERVICE
+    , cert = this.get('certificate').toString('utf8')
   var pack = this.genPackage_(_.reduce(IpizzaBank.services[service],
     function (memo, val, key) {
       if (val) {
@@ -153,30 +156,17 @@ IpizzaBank.prototype.response = function (req, resp) {
       }
       return memo
     }, {}))
+  if (req.body.VK_ENCODING === 'UTF-8') {
+    var Iconv  = require('iconv').Iconv
+      , iconv = new Iconv('ISO-8859-1', 'UTF-8');
+    pack = iconv.convert(pack).toString('utf8');
+  }
+  log.verbose('resp package', pack)
+  log.verbose('resp mac', req.body.VK_MAC)
   var verifier = crypto.createVerify('RSA-SHA1')
   verifier.update(pack)
-  var signer = crypto.createSign('RSA-SHA1')
-  signer.update(pack)
-  console.log(pack)
-  var ret = verifier.verify(this.get('certificate').toString('utf8'), req.body.VK_MAC, 'base64')
-  console.log(ret, this.get('certificate').toString('utf8'), req.body.VK_MAC, 'base64')
-  resp.end(JSON.stringify(req.body));
+  var ret = verifier.verify(cert, req.body.VK_MAC, 'base64')
+  resp.end(ret.toString());
 }
-/*
-004 1101
-003 008
-002 HP
-009 uid202196
-004 1234
-005 13915
-005 19.00
-003 EUR
-000
-000
-012 221234567897
-015 Tõõger Leõpäöld
-009 121312952
-005 goods
-010 22.08.2012
-*/
+
 module.exports = IpizzaBank
