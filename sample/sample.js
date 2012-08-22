@@ -23,10 +23,17 @@ ipizza.provider('seb',
   , certificate: __dirname + '/keys/seb.cert.pem'
   })
 
+ipizza.provider(
+  { provider: 'sampo'
+  , clientId: 'uid203713'
+  , privateKey: __dirname + '/keys/sampo.key.pem'
+  , certificate: __dirname + '/keys/sampo.cert.pem'
+  })
+
 
 
 app.get('/', function (req, res) {
-  var data = { provider: 'seb'
+  var data = { provider: 'sampo'
              , amount: 19
              , id: 1234
              , ref: 121312952
@@ -35,7 +42,7 @@ app.get('/', function (req, res) {
 
   var params = ipizza.payment(data).json()
   res.set('Content-Type', 'text/html')
-  res.write('<form action="https://pangalink.net/banklink/008/seb" method="post"><input type="submit">');
+  res.write('<form action="https://pangalink.net/banklink/008/sampo" method="post"><input type="submit">');
   for (var i in params) {
     res.write('<input type="text" name="'+i+'" value="'+params[i]+'">');
   }

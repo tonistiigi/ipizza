@@ -119,10 +119,8 @@ IpizzaBank.prototype.json = function () {
     params['VK_ENCODING'] = params['VK_CHARSET'] = this.get('encoding')
   } 
   
-  if (this.name == 'swedbank') delete params['VK_CHARSET']
-  if (this.name == 'seb') delete params['VK_ENCODING']
-  
-  
+  if (this.name != 'swedbank') delete params['VK_ENCODING']
+  if (this.name != 'seb') delete params['VK_CHARSET']
   params['VK_MAC'] = this.genMac_(params)
 
   log.verbose('req mac', params['VK_MAC'])
@@ -130,13 +128,14 @@ IpizzaBank.prototype.json = function () {
   var ipizza = require('ipizza')
   params['VK_RETURN'] = ipizza.get('hostname') + ipizza.get('response') + '/'
     + this.get('provider')
+  log.verbose('req body', params)
   return params
 }
 
 IpizzaBank.prototype.genPackage_ = function (params) {
   return _.reduce(params, function (memo, val, key) {
     val = val.toString()
-    var len = Buffer.byteLength(val, 'utf8')
+    var len = this.name == 'seb' ? Buffer.byteLength(val, 'utf8') : val.length
     memo += S('0').repeat(3 - len.toString().length).toString()
       + len + val
     return memo
@@ -150,6 +149,12 @@ IpizzaBank.prototype.genMac_ = function (params) {
     }
     return memo
   }, {}))
+  if (params.VK_ENCODING != 'UTF-8' && params.VK_CHARSET !== 'UTF-8') {
+    var Iconv  = require('iconv').Iconv
+      , iconv = new Iconv('ISO-8859-1', 'UTF-8')
+    pack = iconv.convert(pack).toString('utf8')
+  }
+  
   log.verbose('req package', pack)
   var signer = crypto.createSign('RSA-SHA1')
   signer.update(pack)
@@ -167,7 +172,7 @@ IpizzaBank.prototype.response = function (req, resp) {
       }
       return memo
     }, {}))
-  if (req.body.VK_ENCODING === 'UTF-8' || req.body.VK_CHARSET == 'UTF-8') {
+  if (req.body.VK_ENCODING === 'UTF-8' || req.body.VK_CHARSET === 'UTF-8') {
     var Iconv  = require('iconv').Iconv
       , iconv = new Iconv('ISO-8859-1', 'UTF-8');
     pack = iconv.convert(pack).toString('utf8');
