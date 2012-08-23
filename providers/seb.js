@@ -6,7 +6,7 @@ function Seb (opt) {
 }
 Seb.prototype = Object.create(IpizzaBank.prototype)
 
-Seb.prototype.gateways = 
+Seb.prototype.gateways =
   { development: 'https://pangalink.net/banklink/008/seb'
   , production: 'https://www.seb.ee/cgi-bin/unet3.sh/un3min.rk'
   }

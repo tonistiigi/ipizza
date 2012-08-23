@@ -9,7 +9,7 @@ var Buffer = require('buffer').Buffer
 function IpizzaBank (opt) {
   this.opt = {}
   this.set(opt)
-  
+
   if (!this.get('gateway')) {
     var ipizza = require('ipizza')
     this.set('gateway', this.gateways[ipizza.get('env')])
@@ -17,7 +17,7 @@ function IpizzaBank (opt) {
 }
 IpizzaBank.prototype = Object.create(require('events').EventEmitter.prototype)
 
-IpizzaBank.services = 
+IpizzaBank.services =
   { 1001: { VK_SERVICE: 1001
           , VK_VERSION: '008'
           , VK_SND_ID: ''
@@ -89,7 +89,7 @@ IpizzaBank.prototype.set = function (key, val) {
     }
     return
   }
-  
+
   key = S(key).camelize().toString()
   if (key == 'privateKey') val = fs.readFileSync(val)
   if (key == 'certificate') val = fs.readFileSync(val)
@@ -110,32 +110,32 @@ IpizzaBank.prototype.json = function () {
     _.extend(params, { VK_NAME: this.get('accountName')
                      , VK_ACC: this.get('account')})
   }
-  
+
   _.extend(params, { VK_SND_ID: this.get('clientId')
                    , VK_STAMP: this.get('id')
                    , VK_AMOUNT: parseFloat(this.get('amount')).toFixed(2)
                    , VK_REF: this.get('ref')
                    , VK_MSG: this.get('msg')
                    })
-  
+
   if (this.get('curr')) params['VK_CURR'] = this.get('curr')
   if (this.get('return')) params['VK_RETURN'] = this.get('return')
   if (this.get('lang')) params['VK_LANG'] = this.get('lang')
   if (this.get('encoding')) {
     params['VK_ENCODING'] = params['VK_CHARSET'] = this.get('encoding')
   }
-  
+
   if (this.name != 'swedbank') delete params['VK_ENCODING']
   if (this.name != 'seb') delete params['VK_CHARSET']
-  
-  
+
+
   this.utf8_ = params['VK_ENCODING'] === 'UTF-8'
                || params['VK_CHARSET'] == 'UTF-8'
-  
+
   params['VK_MAC'] = this.genMac_(params)
 
   log.verbose('req mac', params['VK_MAC'])
-  
+
   var ipizza = require('ipizza')
   params['VK_RETURN'] = ipizza.get('hostname') + ipizza.get('response') + '/'
     + this.get('provider')
@@ -156,7 +156,8 @@ IpizzaBank.prototype.genPackage_ = function (params) {
 
 IpizzaBank.prototype.genMac_ = function (params) {
   var pack = this.genPackage_(_.reduce(params, function (memo, val, key) {
-    if (!~['VK_MAC', 'VK_RETURN', 'VK_LANG', 'VK_ENCODING', 'VK_CHARSET'].indexOf(key)) {
+    if (!~['VK_MAC', 'VK_RETURN', 'VK_LANG', 'VK_ENCODING',
+           'VK_CHARSET'].indexOf(key)) {
       memo[key] = val
     }
     return memo
@@ -165,7 +166,7 @@ IpizzaBank.prototype.genMac_ = function (params) {
     var iconv = new Iconv('ISO-8859-1', 'UTF-8')
     pack = iconv.convert(pack.toString()).toString('utf8')
   }
-  
+
   log.verbose('req package', pack)
   var signer = crypto.createSign('RSA-SHA1')
   signer.update(pack)
@@ -194,19 +195,21 @@ IpizzaBank.prototype.response = function (req, resp) {
   var verifier = crypto.createVerify('RSA-SHA1')
   verifier.update(pack)
   var ret = verifier.verify(cert, req.body.VK_MAC, 'base64')
-  resp.end(ret.toString());
+  resp.end(ret.toString())
 }
 
 IpizzaBank.prototype.html = function () {
   var uid = this.get('provider') + ((Math.random() * 1e6) | 0)
     , params = this.json()
-    , html = '<form action="' + this.get('gateway') +'" method="post" id="' + uid + '">'
+    , html = '<form action="' + this.get('gateway') +'" method="post" id="'
+        + uid + '">'
   //html += '<input type="submit">'
   for (var i in params) {
    html += '<input type="hidden" name="' + i + '" value="' + params[i] + '">'
   }
   html += '</form>'
-  html += '<script type="text/javascript">document.getElementById("' + uid + '").submit()</script>'
+  html += '<script type="text/javascript">document.getElementById("'
+    + uid + '").submit()</script>'
   return html
 }
 
