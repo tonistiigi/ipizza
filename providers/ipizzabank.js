@@ -1,6 +1,7 @@
 var Buffer = require('buffer').Buffer
   , crypto = require('crypto')
   , fs = require('fs')
+  , Iconv  = require('iconv').Iconv
   , S = require('string')
   , log = require('npmlog')
   , _ = require('underscore')._
@@ -121,6 +122,7 @@ IpizzaBank.prototype.json = function () {
   
   if (this.name != 'swedbank') delete params['VK_ENCODING']
   if (this.name != 'seb') delete params['VK_CHARSET']
+  
   params['VK_MAC'] = this.genMac_(params)
 
   log.verbose('req mac', params['VK_MAC'])
@@ -135,11 +137,12 @@ IpizzaBank.prototype.json = function () {
 IpizzaBank.prototype.genPackage_ = function (params) {
   return _.reduce(params, function (memo, val, key) {
     val = val.toString()
-    var len = this.name == 'seb' ? Buffer.byteLength(val, 'utf8') : val.length
+    var len = this.name == 'seb' && params['VK_CHARSET'] == 'UTF-8' ?
+      Buffer.byteLength(val, 'utf8') : val.length
     memo += S('0').repeat(3 - len.toString().length).toString()
       + len + val
     return memo
-  }, '')
+  }, '', this)
 }
 
 IpizzaBank.prototype.genMac_ = function (params) {
@@ -149,10 +152,9 @@ IpizzaBank.prototype.genMac_ = function (params) {
     }
     return memo
   }, {}))
-  if (params.VK_ENCODING != 'UTF-8' && params.VK_CHARSET !== 'UTF-8') {
-    var Iconv  = require('iconv').Iconv
-      , iconv = new Iconv('ISO-8859-1', 'UTF-8')
-    pack = iconv.convert(pack).toString('utf8')
+  if (params.VK_ENCODING === 'UTF-8' || params.VK_CHARSET === 'UTF-8') {
+    var iconv = new Iconv('ISO-8859-1', 'UTF-8')
+    pack = iconv.convert(pack.toString()).toString('utf8')
   }
   
   log.verbose('req package', pack)
@@ -173,8 +175,7 @@ IpizzaBank.prototype.response = function (req, resp) {
       return memo
     }, {}))
   if (req.body.VK_ENCODING === 'UTF-8' || req.body.VK_CHARSET === 'UTF-8') {
-    var Iconv  = require('iconv').Iconv
-      , iconv = new Iconv('ISO-8859-1', 'UTF-8');
+    var iconv = new Iconv('ISO-8859-1', 'UTF-8');
     pack = iconv.convert(pack).toString('utf8');
   }
   log.verbose('resp package', pack)

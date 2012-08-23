@@ -1,5 +1,7 @@
 var express = require('express')
 var app = express()
+var Buffer = require('buffer').Buffer
+var Iconv  = require('iconv').Iconv
 
 app.use(express.bodyParser())
 
@@ -14,7 +16,6 @@ ipizza.provider('swedbank',
   { clientId: 'uid202196'
   , privateKey: __dirname + '/keys/swedbank.key.pem'
   , certificate: __dirname + '/keys/swedbank.cert.pem'
-  , gateway: 'https://pangalink.net/banklink/008/swedbank'
   })
 
 ipizza.provider('seb',
@@ -37,7 +38,7 @@ app.get('/', function (req, res) {
              , amount: 19
              , id: 1234
              , ref: 121312952
-             , msg: 'goods'
+             , msg: 'goods üÜõÕöÖäÄ'
              }
 
   var params = ipizza.payment(data).json()
