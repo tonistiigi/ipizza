@@ -198,7 +198,8 @@ IpizzaBank.prototype.response = function (req, resp) {
   var ret = verifier.verify(cert, req.body.VK_MAC, 'base64')
   var ipizza = require('ipizza')
   var reply = { provider: this.name
-              , clientId: params.VK_SND_ID
+              , bankId: params.VK_SND_ID
+              , clientId: params.VK_REC_ID
               , id: params.VK_STAMP
               , ref: params.VK_REF
               , msg: params.VK_MSG
