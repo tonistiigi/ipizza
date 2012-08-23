@@ -32,16 +32,21 @@ ipizza.provider(
   })
 
 
+ipizza.on('success', function (reply, req, resp) {
+  
+})
+ipizza.on('error', function (reply, req, resp) {
+  
+})
+
 
 app.get('/', function (req, res) {
-  var data = { provider: 'sampo'
-             , amount: 19
-             , id: 1234
-             , ref: 121312952
-             , msg: 'goods üÜõÕöÖäÄ'
-             }
+  res.sendfile(__dirname + '/pay.html')
+})
 
-  ipizza.payment(data).pipe(res)
+app.post('/pay', function (req, res) {
+  // Never do this in production. Don't send payment data directly from request.
+  ipizza.payment(req.body).pipe(res)
 })
 
 app.listen(4000)

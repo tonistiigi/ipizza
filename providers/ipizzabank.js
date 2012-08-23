@@ -176,6 +176,8 @@ IpizzaBank.prototype.response = function (req, resp) {
   log.verbose('resp body', req.body)
   var service = req.body.VK_SERVICE
     , cert = this.get('certificate').toString('utf8')
+  this.utf8_ = req.body['VK_ENCODING'] === 'UTF-8'
+               || req.body['VK_CHARSET'] == 'UTF-8'
   var pack = this.genPackage_(_.reduce(IpizzaBank.services[service],
     function (memo, val, key) {
       if (val) {
@@ -199,12 +201,12 @@ IpizzaBank.prototype.html = function () {
   var uid = this.get('provider') + ((Math.random() * 1e6) | 0)
     , params = this.json()
     , html = '<form action="' + this.get('gateway') +'" method="post" id="' + uid + '">'
-  html += '<input type="submit">'
+  //html += '<input type="submit">'
   for (var i in params) {
-   html += '<input type="text" name="' + i + '" value="' + params[i] + '">'
+   html += '<input type="hidden" name="' + i + '" value="' + params[i] + '">'
   }
   html += '</form>'
-  html += '<script type="text/javascript">//document.getElementById("' + uid + '").submit()</script>'
+  html += '<script type="text/javascript">document.getElementById("' + uid + '").submit()</script>'
   return html
 }
 
