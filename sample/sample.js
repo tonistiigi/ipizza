@@ -36,6 +36,12 @@ ipizza.provider(
   , privateKey: __dirname + '/keys/krediidipank.key.pem'
   , certificate: __dirname + '/keys/krediidipank.cert.pem'
   })
+ipizza.provider(
+  { provider: 'lhv'
+  , clientId: 'uid205300'
+  , privateKey: __dirname + '/keys/lhv.key.pem'
+  , certificate: __dirname + '/keys/lhv.cert.pem'
+  })
 
 
 ipizza.on('success', function (reply, req, resp) {

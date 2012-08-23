@@ -128,7 +128,7 @@ IpizzaBank.prototype.json = function () {
   }
 
   if (this.name != 'swedbank') delete params['VK_ENCODING']
-  if (this.name != 'seb' && this.name != 'krediidipank') {
+  if (!~['seb', 'krediidipank', 'lhv'].indexOf(this.name)) {
     delete params['VK_CHARSET']
   }
 
@@ -149,7 +149,7 @@ IpizzaBank.prototype.json = function () {
 IpizzaBank.prototype.genPackage_ = function (params) {
   return _.reduce(params, function (memo, val, key) {
     val = val.toString()
-    var len = this.name == 'seb' && this.utf8_ ?
+    var len = ['seb', 'lhv'].indexOf(this.name) && this.utf8_ ?
       Buffer.byteLength(val, 'utf8') : val.length
     memo += S('0').repeat(3 - len.toString().length).toString()
       + len + val
