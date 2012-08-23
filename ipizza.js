@@ -55,6 +55,9 @@ ipizza.get = function (key) {
 }
 
 ipizza.provider = function (provider, opt) {
+  if (provider instanceof Array) {
+    return provider.forEach(ipizza.provider)
+  }
   if (typeof provider === 'string') opt.provider = provider
   else opt = provider
   if (!providers[opt.provider]) {

@@ -149,7 +149,7 @@ IpizzaBank.prototype.json = function () {
 IpizzaBank.prototype.genPackage_ = function (params) {
   return _.reduce(params, function (memo, val, key) {
     val = val.toString()
-    var len = ['seb', 'lhv'].indexOf(this.name) && this.utf8_ ?
+    var len = (~['seb', 'lhv'].indexOf(this.name)) && this.utf8_ ?
       Buffer.byteLength(val, 'utf8') : val.length
     memo += S('0').repeat(3 - len.toString().length).toString()
       + len + val
@@ -233,12 +233,12 @@ IpizzaBank.prototype.html = function () {
     , params = this.json()
     , html = '<form action="' + this.get('gateway') +'" method="post" id="'
         + uid + '">'
-  html += '<input type="submit">'
+  //html += '<input type="submit">'
   for (var i in params) {
    html += '<input type="hidden" name="' + i + '" value="' + params[i] + '">'
   }
   html += '</form>'
-  html += '<script type="text/javascript">//document.getElementById("'
+  html += '<script type="text/javascript">document.getElementById("'
     + uid + '").submit()</script>'
   return html
 }
