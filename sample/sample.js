@@ -45,7 +45,7 @@ ipizza.provider(
     , algorithm: 'md5'
     , mac: 'LEHTI'
     }
-  /*, { provider: 'nordea'
+/*, { provider: 'nordea'
     , clientId: '10205504'
     , algorithm: 'SHA256'
     , mac: 'dmzqcD99hgkgPFJ1tNh0BFLElpAxBRXT'

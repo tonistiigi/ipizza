@@ -6,6 +6,8 @@ function Nordea (opt) {
   this.name = 'nordea'
   if (!opt.algorithm) opt.algorithm = 'SHA1'
 
+  // Pangalink.net uses ISO (like the spec) but Nordeas test site is UTF8.
+  this.utf8_ = true;
   IpizzaBank.apply(this, arguments)
 }
 Nordea.prototype = Object.create(IpizzaBank.prototype)

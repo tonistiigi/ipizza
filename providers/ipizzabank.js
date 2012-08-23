@@ -1,7 +1,7 @@
 var Buffer = require('buffer').Buffer
   , crypto = require('crypto')
   , fs = require('fs')
-  , Iconv  = require('iconv').Iconv
+  , Iconv = require('iconv').Iconv
   , S = require('string')
   , log = require('npmlog')
   , _ = require('underscore')._
@@ -233,12 +233,12 @@ IpizzaBank.prototype.html = function () {
     , params = this.json()
     , html = '<form action="' + this.get('gateway') +'" method="post" id="'
         + uid + '">'
-  html += '<input type="submit">'
+  //html += '<input type="submit">'
   for (var i in params) {
    html += '<input type="hidden" name="' + i + '" value="' + params[i] + '">'
   }
   html += '</form>'
-  html += '<script type="text/javascript">//document.getElementById("'
+  html += '<script type="text/javascript">document.getElementById("'
     + uid + '").submit()</script>'
   return html
 }
