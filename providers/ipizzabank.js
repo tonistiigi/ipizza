@@ -9,6 +9,11 @@ var Buffer = require('buffer').Buffer
 function IpizzaBank (opt) {
   this.opt = {}
   this.set(opt)
+  
+  if (!this.get('gateway')) {
+    var ipizza = require('ipizza')
+    this.set('gateway', this.gateways[ipizza.get('env')])
+  }
 }
 IpizzaBank.prototype = Object.create(require('events').EventEmitter.prototype)
 
@@ -118,10 +123,14 @@ IpizzaBank.prototype.json = function () {
   if (this.get('lang')) params['VK_LANG'] = this.get('lang')
   if (this.get('encoding')) {
     params['VK_ENCODING'] = params['VK_CHARSET'] = this.get('encoding')
-  } 
+  }
   
   if (this.name != 'swedbank') delete params['VK_ENCODING']
   if (this.name != 'seb') delete params['VK_CHARSET']
+  
+  
+  this.utf8_ = params['VK_ENCODING'] === 'UTF-8'
+               || params['VK_CHARSET'] == 'UTF-8'
   
   params['VK_MAC'] = this.genMac_(params)
 
@@ -137,7 +146,7 @@ IpizzaBank.prototype.json = function () {
 IpizzaBank.prototype.genPackage_ = function (params) {
   return _.reduce(params, function (memo, val, key) {
     val = val.toString()
-    var len = this.name == 'seb' && params['VK_CHARSET'] == 'UTF-8' ?
+    var len = this.name == 'seb' && this.utf8_ ?
       Buffer.byteLength(val, 'utf8') : val.length
     memo += S('0').repeat(3 - len.toString().length).toString()
       + len + val
@@ -152,7 +161,7 @@ IpizzaBank.prototype.genMac_ = function (params) {
     }
     return memo
   }, {}))
-  if (params.VK_ENCODING === 'UTF-8' || params.VK_CHARSET === 'UTF-8') {
+  if (this.utf8_) {
     var iconv = new Iconv('ISO-8859-1', 'UTF-8')
     pack = iconv.convert(pack.toString()).toString('utf8')
   }
@@ -184,6 +193,37 @@ IpizzaBank.prototype.response = function (req, resp) {
   verifier.update(pack)
   var ret = verifier.verify(cert, req.body.VK_MAC, 'base64')
   resp.end(ret.toString());
+}
+
+IpizzaBank.prototype.html = function () {
+  var uid = this.get('provider') + ((Math.random() * 1e6) | 0)
+    , params = this.json()
+    , html = '<form action="' + this.get('gateway') +'" method="post" id="' + uid + '">'
+  html += '<input type="submit">'
+  for (var i in params) {
+   html += '<input type="text" name="' + i + '" value="' + params[i] + '">'
+  }
+  html += '</form>'
+  html += '<script type="text/javascript">//document.getElementById("' + uid + '").submit()</script>'
+  return html
+}
+
+IpizzaBank.prototype.pipe = function (resp) {
+  var html = '<!doctype html><html><head>'
+  html += '<meta http-equiv="Content-Type" content="text/html; charset='
+    + (this.utf8_ ? 'utf-8' : 'iso-8859-1') + '">'
+  html += '</head><body>'
+  html += this.html()
+  html += '</body></html>'
+  resp.set('Content-Type', 'text/html; charset='
+    + (this.utf8_ ? 'utf-8' : 'iso-8859-1'))
+  if (!this.utf8_) {
+    var iconv = new Iconv( 'UTF-8', 'ISO-8859-1')
+    resp.end(iconv.convert(html))
+  }
+  else {
+    resp.end(html)
+  }
 }
 
 module.exports = IpizzaBank

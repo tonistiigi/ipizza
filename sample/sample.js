@@ -41,14 +41,7 @@ app.get('/', function (req, res) {
              , msg: 'goods üÜõÕöÖäÄ'
              }
 
-  var params = ipizza.payment(data).json()
-  res.set('Content-Type', 'text/html')
-  res.write('<form action="https://pangalink.net/banklink/008/sampo" method="post"><input type="submit">');
-  for (var i in params) {
-    res.write('<input type="text" name="'+i+'" value="'+params[i]+'">');
-  }
-  res.write('</form>');
-  res.end();
+  ipizza.payment(data).pipe(res)
 })
 
 app.listen(4000)
