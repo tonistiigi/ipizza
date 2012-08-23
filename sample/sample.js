@@ -33,10 +33,12 @@ ipizza.provider(
 
 
 ipizza.on('success', function (reply, req, resp) {
-
+  resp.write('Payment OK!')
+  resp.end(require('util').inspect(reply, false, 3))
 })
 ipizza.on('error', function (reply, req, resp) {
-
+  resp.write('Payment Error!');
+  resp.end(require('util').inspect(reply, false, 3));
 })
 
 

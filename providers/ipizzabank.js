@@ -179,13 +179,14 @@ IpizzaBank.prototype.response = function (req, resp) {
     , cert = this.get('certificate').toString('utf8')
   this.utf8_ = req.body['VK_ENCODING'] === 'UTF-8'
                || req.body['VK_CHARSET'] == 'UTF-8'
-  var pack = this.genPackage_(_.reduce(IpizzaBank.services[service],
+  var params = _.reduce(IpizzaBank.services[service],
     function (memo, val, key) {
       if (val) {
         memo[key] = unescape(req.body[key]).replace(/\+/g, ' ')
       }
       return memo
-    }, {}))
+    }, {})
+  var pack = this.genPackage_(params)
   if (req.body.VK_ENCODING === 'UTF-8' || req.body.VK_CHARSET === 'UTF-8') {
     var iconv = new Iconv('ISO-8859-1', 'UTF-8');
     pack = iconv.convert(pack).toString('utf8');
@@ -195,7 +196,32 @@ IpizzaBank.prototype.response = function (req, resp) {
   var verifier = crypto.createVerify('RSA-SHA1')
   verifier.update(pack)
   var ret = verifier.verify(cert, req.body.VK_MAC, 'base64')
-  resp.end(ret.toString())
+  var ipizza = require('ipizza')
+  var reply = { provider: this.name
+              , clientId: params.VK_SND_ID
+              , id: params.VK_STAMP
+              , ref: params.VK_REF
+              , msg: params.VK_MSG
+              , lang: req.body.VK_LANG
+              , isAuto: req.body.VK_AUTO === 'Y'
+              }
+  if (!ret) {
+    ipizza.emit('error', _.extend({type: 'not verified'}, reply), req, resp)
+  }
+  else if (req.body.VK_SERVICE === '1901') {
+    ipizza.emit('error', _.extend({type: 'not paid'}, reply), req, resp)
+  }
+  else {
+    ipizza.emit('success', _.extend({ transactionId: params.VK_T_NO
+                                    , amount: parseFloat(params.VK_AMOUNT)
+                                    , curr: params.VK_CURR
+                                    , receiver: params.VK_REC_ACC
+                                    , receiverName: params.VK_REC_NAME
+                                    , sender: params.VK_SND_ACC
+                                    , senderName: params.VK_SND_NAME
+                                    , date: params.VK_T_DATE
+                                    }, reply), req, resp)
+  }
 }
 
 IpizzaBank.prototype.html = function () {
