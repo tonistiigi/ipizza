@@ -38,6 +38,18 @@ ipizza.provider(
     , privateKey: __dirname + '/keys/lhv.key.pem'
     , certificate: __dirname + '/keys/lhv.cert.pem'
     }
+  // Customer number: 111111    Password: 9999
+  , { provider: 'nordea'
+    , gateway: 'https://netbank.nordea.com/pnbepaytest/epayn.jsp'
+    , clientId: '12345678'
+    , algorithm: 'md5'
+    , mac: 'LEHTI'
+    }
+  /*, { provider: 'nordea'
+    , clientId: '10205504'
+    , algorithm: 'SHA256'
+    , mac: 'dmzqcD99hgkgPFJ1tNh0BFLElpAxBRXT'
+    }*/
   ])
 
 ipizza.on('success', function (reply, req, resp) {
