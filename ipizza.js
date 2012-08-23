@@ -12,7 +12,7 @@ log.stream = process.stdout
 
 function setupAppHandler() {
   var app = ipizza.get('appHandler')
-    , response = ipizza.get('response') 
+    , response = ipizza.get('response')
   if (app && response) {
     _.forEach(providers, function (v, k) {
       var route = response + '/' + k
@@ -32,20 +32,20 @@ ipizza.set = function (key, val) {
     }
     return
   }
-  
+
   key = S(key).camelize().toString()
-  
+
   opt[key] = val
-  
+
   if (key === 'logLevel') log.level = key
   if (key === 'appHander' || key === 'response') setupAppHandler()
-  
+
 
 }
 
 ipizza.get = function (key) {
   if (!arguments.length) return opt
-  
+
   key = S(key).camelize().toString()
   if (opt[key] === undefined) {
     log.error('Can\'t get option %s. No such option.')
@@ -69,9 +69,9 @@ ipizza.provider = function (provider, opt) {
 ipizza.payment = function (provider, opt) {
   if (typeof provider === 'string') opt.provider = opt
   else opt = provider
-  
+
   if (!providers[opt.provider]) {
-    winston.error('No provider %s set up', opt.provider)
+    log.error('provider for request', 'No such provider %s', opt.provider)
     return
   }
   var payment = new providers[opt.provider].klass(
@@ -85,7 +85,7 @@ ipizza.response = function (provider, req, resp) {
     payment.response(req, resp)
   }
   else {
-    log.error('Can\'t send response to %s. No such provider setup.', provider)
+    log.error('provider for response', 'No such provider %s.', provider)
   }
 }
 
@@ -103,13 +103,13 @@ ipizza.set({ appHandler: null
 ipizza.define('swedbank', require(__dirname + '/providers/swedbank.js'))
 ipizza.define('seb', require(__dirname + '/providers/seb.js'))
 ipizza.define('sampo', require(__dirname + '/providers/sampo.js'))
+ipizza.define('krediidipank', require(__dirname + '/providers/krediidipank.js'))
 
 /*
 ipizza.define('swedbank_est', require(__dirname + '/providers/swedbank.js'))
 ipizza.define('swedbank_lat', require(__dirname + '/providers/swedbank_lat.js'))
 ipizza.define('swedbank_ltl', require(__dirname + '/providers/swedbank_ltl.js'))
 ipizza.define('lhv', require(__dirname + '/providers/lhv.js'))
-ipizza.define('krediidipank', require(__dirname + '/providers/krediidipank.js'))
 ipizza.define('nordea', require(__dirname + '/providers/nordea.js'))
 */
 

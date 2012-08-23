@@ -30,6 +30,12 @@ ipizza.provider(
   , privateKey: __dirname + '/keys/sampo.key.pem'
   , certificate: __dirname + '/keys/sampo.cert.pem'
   })
+ipizza.provider(
+  { provider: 'krediidipank'
+  , clientId: 'uid205258'
+  , privateKey: __dirname + '/keys/krediidipank.key.pem'
+  , certificate: __dirname + '/keys/krediidipank.cert.pem'
+  })
 
 
 ipizza.on('success', function (reply, req, resp) {

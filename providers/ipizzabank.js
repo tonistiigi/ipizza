@@ -121,13 +121,16 @@ IpizzaBank.prototype.json = function () {
   if (this.get('curr')) params['VK_CURR'] = this.get('curr')
   if (this.get('return')) params['VK_RETURN'] = this.get('return')
   if (this.get('lang')) params['VK_LANG'] = this.get('lang')
-  if (this.get('encoding')) {
+  if (this.get('encoding') && this.name != 'krediidipank') {
+    // Krediidipank uses ISO-8859-13 as alernative.
+    // I see no reason to support it.
     params['VK_ENCODING'] = params['VK_CHARSET'] = this.get('encoding')
   }
 
   if (this.name != 'swedbank') delete params['VK_ENCODING']
-  if (this.name != 'seb') delete params['VK_CHARSET']
-
+  if (this.name != 'seb' && this.name != 'krediidipank') {
+    delete params['VK_CHARSET']
+  }
 
   this.utf8_ = params['VK_ENCODING'] === 'UTF-8'
                || params['VK_CHARSET'] == 'UTF-8'
@@ -230,12 +233,12 @@ IpizzaBank.prototype.html = function () {
     , params = this.json()
     , html = '<form action="' + this.get('gateway') +'" method="post" id="'
         + uid + '">'
-  //html += '<input type="submit">'
+  html += '<input type="submit">'
   for (var i in params) {
    html += '<input type="hidden" name="' + i + '" value="' + params[i] + '">'
   }
   html += '</form>'
-  html += '<script type="text/javascript">document.getElementById("'
+  html += '<script type="text/javascript">//document.getElementById("'
     + uid + '").submit()</script>'
   return html
 }
