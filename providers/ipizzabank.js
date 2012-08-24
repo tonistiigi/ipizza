@@ -11,7 +11,7 @@ function IpizzaBank (opt) {
   this.set(opt)
 
   if (!this.get('gateway')) {
-    var ipizza = require('ipizza')
+    var ipizza = require(__dirname + '/../ipizza.js')
     this.set('gateway', this.gateways[ipizza.get('env')])
   }
 }
@@ -139,7 +139,7 @@ IpizzaBank.prototype.json = function () {
 
   log.verbose('req mac', params['VK_MAC'])
 
-  var ipizza = require('ipizza')
+  var ipizza = require(__dirname + '/../ipizza.js')
   params['VK_RETURN'] = ipizza.get('hostname') + ipizza.get('response') + '/'
     + this.get('provider')
   log.verbose('req body', params)
@@ -198,8 +198,8 @@ IpizzaBank.prototype.response = function (req, resp) {
   log.verbose('resp mac', req.body.VK_MAC)
   var verifier = crypto.createVerify('RSA-SHA1')
   verifier.update(pack)
-  var ret = verifier.verify(cert, req.body.VK_MAC, 'base64')
-  var ipizza = require('ipizza')
+  var ret = verifier.verify(cert, req.body.VK_MAC || '', 'base64')
+  var ipizza = require(__dirname + '/../ipizza.js')
   var reply = { provider: this.name
               , bankId: params.VK_SND_ID
               , clientId: params.VK_REC_ID

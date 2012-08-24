@@ -1,7 +1,5 @@
 var express = require('express')
 var app = express()
-var Buffer = require('buffer').Buffer
-var Iconv  = require('iconv').Iconv
 
 app.use(express.bodyParser())
 

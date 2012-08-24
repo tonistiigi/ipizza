@@ -18,7 +18,7 @@ Nordea.prototype.gateways =
   }
 
 Nordea.prototype.json = function () {
-  var ipizza = require('ipizza')
+  var ipizza = require(__dirname + '/../ipizza.js')
   var params = {}
   params.SOLOPMT_VERSION = '0003'
   params.SOLOPMT_STAMP = this.get('id')
@@ -68,7 +68,7 @@ Nordea.prototype.response = function (req, resp) {
   var hash = crypto.createHash(this.get('algorithm').toLowerCase())
   hash.update(pack)
   var ret = hash.digest('hex').toUpperCase() === params.SOLOPMT_RETURN_MAC
-  var ipizza = require('ipizza')
+  var ipizza = require(__dirname + '/../ipizza.js')
   var reply = { provider: this.name
               , bankId: 'nordea'
               , clientId: this.get('clientId')
