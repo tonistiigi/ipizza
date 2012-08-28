@@ -29,7 +29,7 @@ Nordea.prototype.json = function () {
   }
   params.SOLOPMT_LANGUAGE = this.get('lang') === 'EST' ? '4' : '3'
   params.SOLOPMT_AMOUNT = this.get('amount')
-  params.SOLOPMT_REF = this.get('ref')
+  params.SOLOPMT_REF = this.get('ref') || ipizza.makeRefNumber(this.get('id'))
   params.SOLOPMT_DATE = 'EXPRESS'
   params.SOLOPMT_MSG = this.get('msg')
   params.SOLOPMT_RETURN = params.SOLOPMT_CANCEL = params.SOLOPMT_REJECT =

@@ -25,6 +25,14 @@ function setupAppHandler() {
   }
 }
 
+ipizza.makeRefNumber = function (base) {
+  var total = base.toString().split('').reverse().reduce(
+    function (memo, num, i) {
+      return memo + parseInt(num) * [7, 3, 1][i % 3]
+    }, 0)
+  return parseInt(base.toString() + (Math.ceil(total / 10) * 10 - total))
+}
+
 ipizza.set = function (key, val) {
   if (typeof key !== 'string') {
     for (var i in key) {
