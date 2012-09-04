@@ -114,7 +114,7 @@ IpizzaBank.prototype.json = function () {
   _.extend(params, { VK_SND_ID: this.get('clientId')
                    , VK_STAMP: this.get('id')
                    , VK_AMOUNT: parseFloat(this.get('amount')).toFixed(2)
-                   , VK_REF: this.get('ref')
+                   , VK_REF: this.get('ref') || ''
                    , VK_MSG: this.get('msg')
                    })
 
