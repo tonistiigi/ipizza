@@ -10,6 +10,15 @@ var ipizza = Object.create(require('events').EventEmitter.prototype)
 log.heading = 'ipizza'
 log.stream = process.stdout
 
+ipizza.error_ = function (pfx, message) {
+  if (ipizza.get('throwOnErrors')) {
+    throw(new Error(pfx + ' ' + message))
+  }
+  else {
+    log.error(pfx, message)
+  }
+}
+
 function setupAppHandler() {
   var app = ipizza.get('appHandler')
     , response = ipizza.get('response')
@@ -112,6 +121,7 @@ ipizza.set(
   , hostname: 'http://' + require('os').hostname()
   , logLevel: process.env.NODE_ENV == 'production' ? 'info' : 'verbose'
   , env: process.env.NODE_ENV || 'development'
+  , throwOnErrors: true
   })
 
 
