@@ -47,8 +47,6 @@ ipizza.set = function (key, val) {
 
   if (key === 'logLevel') log.level = key
   if (key === 'appHander' || key === 'response') setupAppHandler()
-
-
 }
 
 ipizza.get = function (key) {
@@ -64,16 +62,20 @@ ipizza.get = function (key) {
 
 ipizza.provider = function (provider, opt) {
   if (provider instanceof Array) {
-    return provider.forEach(ipizza.provider)
+    return provider.forEach(ipizza.provider, opt)
   }
   if (typeof provider === 'string') opt.provider = provider
   else opt = provider
-  if (!providers[opt.provider]) {
+  var p = providers[opt.provider]
+  if (opt.alias) {
+    p = providers[opt.alias] = {klass: p.klass}
+  }
+  if (!p) {
     log.error('provider setup', 'No such provider %s', opt.provider)
   }
   else {
-    providers[opt.provider].opt = opt
-    setupAppHandler()
+    p.opt = opt
+    setupAppHandler() // todo: wrong
   }
 }
 
@@ -85,9 +87,8 @@ ipizza.payment = function (provider, opt) {
     log.error('provider for request', 'No such provider %s', opt.provider)
     return
   }
-  var payment = new providers[opt.provider].klass(
+  return new providers[opt.provider].klass(
     _.extend({}, providers[opt.provider].opt, opt))
-  return payment
 }
 
 ipizza.response = function (provider, req, resp) {
@@ -104,24 +105,24 @@ ipizza.define = function (provider, klass) {
   providers[provider] = {klass: klass, opt: {}}
 }
 
-ipizza.set({ appHandler: null
-           , response: '/api/payment/response'
-           , hostname: 'http://' + require('os').hostname()
-           , logLevel: process.env.NODE_ENV == 'production' ? 'info' : 'verbose'
-           , env: process.env.NODE_ENV || 'development'
-           })
+// Default parameters.
+ipizza.set(
+  { appHandler: null
+  , response: '/api/payment/response'
+  , hostname: 'http://' + require('os').hostname()
+  , logLevel: process.env.NODE_ENV == 'production' ? 'info' : 'verbose'
+  , env: process.env.NODE_ENV || 'development'
+  })
 
-ipizza.define('swedbank', require(__dirname + '/providers/swedbank.js'))
-ipizza.define('seb', require(__dirname + '/providers/seb.js'))
-ipizza.define('sampo', require(__dirname + '/providers/sampo.js'))
-ipizza.define('krediidipank', require(__dirname + '/providers/krediidipank.js'))
-ipizza.define('lhv', require(__dirname + '/providers/lhv.js'))
-ipizza.define('nordea', require(__dirname + '/providers/nordea.js'))
 
-/*
-ipizza.define('swedbank_est', require(__dirname + '/providers/swedbank.js'))
-ipizza.define('swedbank_lat', require(__dirname + '/providers/swedbank_lat.js'))
-ipizza.define('swedbank_ltl', require(__dirname + '/providers/swedbank_ltl.js'))
-*/
+// Define providers.
+;[ 'swedbank'
+, 'seb'
+, 'sampo'
+, 'krediidipank'
+, 'lhv'
+, 'nordea'].forEach(function (provider) {
+  ipizza.define(provider, require(__dirname + '/providers/' + provider + '.js'))
+})
 
 module.exports = ipizza

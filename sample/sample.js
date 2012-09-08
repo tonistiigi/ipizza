@@ -3,7 +3,7 @@ var app = express()
 
 app.use(express.bodyParser())
 
-var ipizza = require('ipizza')
+var ipizza = require('../ipizza')
 
 ipizza.set({ hostname: 'http://localhost:4000'
            , appHandler: app
@@ -43,11 +43,12 @@ ipizza.provider(
     , algorithm: 'md5'
     , mac: 'LEHTI'
     }
-/*, { provider: 'nordea'
+  , { provider: 'nordea'
     , clientId: '10205504'
     , algorithm: 'SHA256'
     , mac: 'dmzqcD99hgkgPFJ1tNh0BFLElpAxBRXT'
-    }*/
+    , alias: 'nordea-plnet'
+    }
   ])
 
 ipizza.on('success', function (reply, req, resp) {
