@@ -1,5 +1,11 @@
 describe('swedbank', function() {
   
+  it('is on by default', function() {
+
+  })
+  it('has gateway URLs for dev/production', function() {
+
+  })
   it('package generation uses string length', function() {
     
   })

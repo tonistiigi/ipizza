@@ -35,6 +35,10 @@ function setupAppHandler() {
 }
 
 ipizza.makeRefNumber = function (base) {
+  if (!(typeof base === 'string' && parseInt(base) > 0)
+      && !(base && parseInt(base) === base)) {
+        ipizza.error_('Reference number', 'can\'t be generated from ' + base)
+      }
   var total = base.toString().split('').reverse().reduce(
     function (memo, num, i) {
       return memo + parseInt(num) * [7, 3, 1][i % 3]
