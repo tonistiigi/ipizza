@@ -1,14 +1,17 @@
-var S = require('string')
+var routes = require('routes')
+  , S = require('string')
   , log = require('npmlog')
   , _ = require('underscore')._
 
 var ipizza = Object.create(require('events').EventEmitter.prototype)
   , opt = {}
   , providers = {}
-  , routes = {}
 
 log.heading = 'ipizza'
-log.stream = process.stdout
+
+ipizza.toString = function() {
+  return 'ipizza'
+}
 
 ipizza.error_ = function (pfx, message) {
   if (ipizza.get('throwOnErrors')) {
@@ -19,19 +22,44 @@ ipizza.error_ = function (pfx, message) {
   }
 }
 
-function setupAppHandler() {
-  var app = ipizza.get('appHandler')
-    , response = ipizza.get('response')
-  if (app && response) {
-    _.forEach(providers, function (v, k) {
-      var route = response + '/' + k
-      if (!routes[route]) {
-        app.all(route, function (req, resp) {
-          ipizza.response(k, req, resp)
-        })
-      }
-    })
+var router;
+
+var handler;
+function createHandler() {
+  if (handler) {
+    handler.stop()
   }
+  var stopped = false;
+  handler = function(req, resp, next) {
+    // Weird detection to allow simple mocks in tests.
+    if (!req || !req.url || !resp || typeof next !== 'function') {
+      return ipizza.error_(
+        'Request handler', 'invoked with invalid arguments. ' +
+        'Expected: http.ServerRequest, http.ServerResponse, function. ' +
+        'Got: ' + req + ', ' + res + ', ' + next)
+    }
+    if (!router) {
+      return ipizza.error_('Handler function called before routes setup.')
+    }
+    if (stopped) {
+      next()
+      return false
+    }
+
+    var match = router.match(req.url)
+    if (!match) {
+      next()
+      return false
+    }
+    if (resp.write) {
+      match.fn(match.params.provider, req, resp)
+    }
+    return true
+  }
+  handler.stop = function() {
+    stopped = true;
+  }
+  return handler
 }
 
 ipizza.makeRefNumber = function (base) {
@@ -56,17 +84,44 @@ ipizza.set = function (key, val) {
 
   key = S(key).camelize().toString()
 
+  if (key === 'appHandler') {
+    if (!(val === undefined || typeof val.use === 'function')) {
+      return ipizza.error_('appHandler', 'is not valid' + val)
+    }
+    var f = createHandler()
+    if (val) {
+      val.use(f)
+    }
+    val = f
+  }
+  else if (key === 'returnRoute' || key === 'env') {
+    if (!(typeof val === 'string' && val.length)) {
+      return ipizza.error_('returnRoute', 'is not valid' + val)
+    }
+    if (key === 'returnRoute') {
+      if (!/\/\:provider(\/|$)/.test(val)) {
+        if (val.substr(-1) !== '/') {
+          val += '/'
+        }
+        val += ':provider'
+      }
+      router = new routes.Router()
+      router.addRoute(val, ipizza.response)
+    }
+  }
+
   opt[key] = val
 
-  if (key === 'logLevel') log.level = key
-  if (key === 'appHander' || key === 'response') setupAppHandler()
+  if (key === 'logLevel') log.level = val
+  if (key === 'logStream') log.stream = val
+
 }
 
 ipizza.get = function (key) {
   if (!arguments.length) return opt
 
   key = S(key).camelize().toString()
-  if (opt[key] === undefined) {
+  if (!opt.hasOwnProperty(key)) {
     log.error('Can\'t get option %s. No such option.')
     return
   }
@@ -88,7 +143,6 @@ ipizza.provider = function (provider, opt) {
   }
   else {
     p.opt = opt
-    setupAppHandler() // todo: wrong
   }
 }
 
@@ -120,10 +174,11 @@ ipizza.define = function (provider, klass) {
 
 // Default parameters.
 ipizza.set(
-  { appHandler: null
-  , response: '/api/payment/response'
+  { appHandler: undefined
+  , returnRoute: '/api/payment/response'
   , hostname: 'http://' + require('os').hostname()
   , logLevel: process.env.NODE_ENV == 'production' ? 'info' : 'verbose'
+  , logStream: process.stdout
   , env: process.env.NODE_ENV || 'development'
   , throwOnErrors: true
   })

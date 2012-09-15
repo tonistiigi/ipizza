@@ -140,8 +140,8 @@ IpizzaBank.prototype.json = function () {
   log.verbose('req mac', params['VK_MAC'])
 
   var ipizza = require(__dirname + '/../ipizza.js')
-  params['VK_RETURN'] = ipizza.get('hostname') + ipizza.get('response') + '/'
-    + this.get('provider')
+  params['VK_RETURN'] = ipizza.get('return') || ipizza.get('hostname') +
+    ipizza.get('returnRoute').replace(':provider', this.get('provider'))
   log.verbose('req body', params)
   return params
 }

@@ -33,7 +33,9 @@ Nordea.prototype.json = function () {
   params.SOLOPMT_DATE = 'EXPRESS'
   params.SOLOPMT_MSG = this.get('msg')
   params.SOLOPMT_RETURN = params.SOLOPMT_CANCEL = params.SOLOPMT_REJECT =
-    ipizza.get('hostname') + ipizza.get('response') + '/' + this.get('provider')
+    ipizza.get('return') || ipizza.get('hostname') +
+      ipizza.get('returnRoute').replace(':provider', this.get('provider'))
+
   params.SOLOPMT_KEYVERS = '0001'
   params.SOLOPMT_CUR = this.get('curr')
   params.SOLOPMT_CONFIRM = 'YES'
