@@ -278,29 +278,37 @@ IpizzaBank.prototype.genMac_ = function (params) {
   return signer.sign(this.get('privateKey').toString('utf8'), 'base64')
 }
 
-IpizzaBank.prototype.response = function (req, resp) {
-  log.verbose('resp body', req.body)
-  var service = req.body.VK_SERVICE
+IpizzaBank.prototype.verify_ = function (body) {
+  var service = body.VK_SERVICE
     , cert = this.get('certificate').toString('utf8')
-  this.utf8_ = req.body['VK_ENCODING'] === 'UTF-8'
-               || req.body['VK_CHARSET'] == 'UTF-8'
+  this.utf8_ = body['VK_ENCODING'] === 'UTF-8'
+               || body['VK_CHARSET'] === 'UTF-8'
   var params = _.reduce(IpizzaBank.services[service],
     function (memo, val, key) {
       if (val) {
-        memo[key] = unescape(req.body[key]).replace(/\+/g, ' ')
+        memo[key] = body[key] = unescape(body[key]).replace(/\+/g, ' ')
       }
       return memo
     }, {})
   var pack = this.genPackage_(params)
-  if (req.body.VK_ENCODING === 'UTF-8' || req.body.VK_CHARSET === 'UTF-8') {
+  if (this.utf8_) {
     var iconv = new Iconv('ISO-8859-1', 'UTF-8');
     pack = iconv.convert(pack).toString('utf8');
   }
   log.verbose('resp package', pack)
-  log.verbose('resp mac', req.body.VK_MAC)
+  log.verbose('resp mac', body.VK_MAC)
   var verifier = crypto.createVerify('RSA-SHA1')
   verifier.update(pack)
-  var ret = verifier.verify(cert, req.body.VK_MAC || '', 'base64')
+
+  return verifier.verify(cert, body.VK_MAC || '', 'base64')
+}
+
+IpizzaBank.prototype.response = function (req, resp) {
+  log.verbose('resp body', req.body)
+
+  var params = req.body
+
+  var ret = this.verify_(params)
   var ipizza = require(__dirname + '/../ipizza.js')
   var reply = { provider: this.name
               , bankId: params.VK_SND_ID
