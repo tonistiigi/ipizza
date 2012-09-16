@@ -21,6 +21,13 @@ ipizza.provider(
     , privateKey: __dirname + '/keys/seb.key.pem'
     , certificate: __dirname + '/keys/seb.cert.pem'
     }
+  , { provider: 'seb'
+    , gateway: 'https://www.seb.ee/cgi-bin/dv.sh/ipank.r'
+    , clientId: 'testvpos'
+    , privateKey: __dirname + '/keys/seb2.key.pem'
+    , certificate: __dirname + '/keys/seb2.cert.pem'
+    , alias: 'seb2'
+    }
   , { provider: 'sampo'
     , clientId: 'uid203713'
     , privateKey: __dirname + '/keys/sampo.key.pem'
