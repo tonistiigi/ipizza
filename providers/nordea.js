@@ -74,10 +74,18 @@ Nordea.prototype.verify_ = function (params) {
 }
 
 Nordea.prototype.response = function (req, resp) {
-  params = req.query
-
-  var ret = this.verify_(params)
   var ipizza = require(path.join(__dirname, '../ipizza'))
+  params = req.query
+  try {
+    if (!params) {
+      params = require('querystring').parse(req.url.split('?')[1])
+    }
+
+    var ret = this.verify_(params)
+  }
+  catch (e) {
+    ret = 0
+  }
   var reply = { provider: this.name
               , bankId: 'nordea'
               , clientId: this.get('clientId')

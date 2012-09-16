@@ -1,15 +1,15 @@
+var domain = require('domain')
+var http = require('http')
 var path = require('path')
-var express = require('express')
-var app = express()
-
-app.use(express.bodyParser())
+var fs = require('fs')
+var querystring = require('querystring')
 
 var ipizza = require('../ipizza')
 
-ipizza.set({ hostname: 'http://localhost:4000'
-           , appHandler: app
-           , logLevel: 'verbose'
-           })
+ipizza.set({
+  hostname: 'http://localhost:4000'
+, logLevel: 'verbose'
+})
 
 ipizza.provider(
   [ { provider: 'swedbank'
@@ -69,17 +69,46 @@ ipizza.on('error', function (reply, req, resp) {
   resp.end(require('util').inspect(reply, false, 3));
 })
 
-app.get('/', function (req, res) {
-  res.sendfile(path.join(__dirname, 'pay.html'))
-})
-app.get('/styles.css', function (req, res) {
-  res.sendfile(path.join(__dirname, 'styles.css'))
-})
+http.createServer(function (req, res) {
 
-app.post('/pay', function (req, res) {
-  // Never do this in production. Don't send payment data directly from request.
-  ipizza.payment(req.body).pipe(res)
-})
+  var d = domain.create()
+  d.add(req)
+  d.add(res)
+  d.on('error', function(er) {
+    try {
+      res.writeHead(500);
+      res.end(er.message + '\n\n' + er.stack);
+      res.on('close', function() {
+        d.dispose();
+      });
+    } catch (er) {
+      d.dispose()
+    }
+  })
 
-app.listen(4000)
+  if (req.url === '/styles.css'){
+    fs.createReadStream(path.join(__dirname, 'styles.css')).pipe(res)
+  }
+  else if (req.url === '/'){
+    fs.createReadStream(path.join(__dirname, 'pay.html')).pipe(res)
+  }
+  else if (req.url === '/pay' && req.method === 'POST'){
+    // Never do this in production. Don't send payment data directly from request.
+    var data = '';
+    req.on('data', function(dt) {
+      data += dt.toString('utf8')
+    })
+    req.on('end', function() {
+      ipizza.payment(querystring.parse(data)).pipe(res)
+    })
+  }
+  else {
+    ipizza.get('appHandler')(req, res, function() {
+      res.writeHead(404)
+      res.end('Not Found')
+    })
+  }
+}).listen(4000, '127.0.0.1');
+
+
 console.log('Application started at http://localhost:4000/')

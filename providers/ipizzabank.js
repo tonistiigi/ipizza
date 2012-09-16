@@ -304,37 +304,60 @@ IpizzaBank.prototype.verify_ = function (body) {
 }
 
 IpizzaBank.prototype.response = function (req, resp) {
-  log.verbose('resp body', req.body)
-
-  var params = req.body
-
-  var ret = this.verify_(params)
   var ipizza = require(__dirname + '/../ipizza.js')
-  var reply = { provider: this.name
-              , bankId: params.VK_SND_ID
-              , clientId: params.VK_REC_ID
-              , id: params.VK_STAMP
-              , ref: params.VK_REF
-              , msg: params.VK_MSG
-              , lang: req.body.VK_LANG
-              , isAuto: req.body.VK_AUTO === 'Y'
-              }
-  if (!ret) {
-    ipizza.emit('error', _.extend({type: 'not verified'}, reply), req, resp)
-  }
-  else if (req.body.VK_SERVICE === '1901') {
-    ipizza.emit('error', _.extend({type: 'not paid'}, reply), req, resp)
+  var params = req.body
+  var self = this;
+
+  if (!params) {
+    var data = ''
+    req.on('data', function (dt) {
+      data += dt.toString('utf8')
+    })
+    req.on('end', function () {
+      data = require('querystring').parse(data)
+      response(data)
+    })
   }
   else {
-    ipizza.emit('success', _.extend({ transactionId: params.VK_T_NO
-                                    , amount: parseFloat(params.VK_AMOUNT)
-                                    , curr: params.VK_CURR
-                                    , receiver: params.VK_REC_ACC
-                                    , receiverName: params.VK_REC_NAME
-                                    , sender: params.VK_SND_ACC
-                                    , senderName: params.VK_SND_NAME
-                                    , date: params.VK_T_DATE
-                                    }, reply), req, resp)
+    response(params)
+  }
+
+  function response (params) {
+    try {
+      log.verbose('resp body', params)
+
+      var ret = self.verify_(params)
+      var reply = { provider: self.name
+                  , bankId: params.VK_SND_ID
+                  , clientId: params.VK_REC_ID
+                  , id: params.VK_STAMP
+                  , ref: params.VK_REF
+                  , msg: params.VK_MSG
+                  , lang: params.VK_LANG
+                  , isAuto: params.VK_AUTO === 'Y'
+                  }
+    }
+    catch (e) {
+      ret = 0
+    }
+
+    if (!ret) {
+      ipizza.emit('error', _.extend({type: 'not verified'}, reply), req, resp)
+    }
+    else if (params.VK_SERVICE === '1901') {
+      ipizza.emit('error', _.extend({type: 'not paid'}, reply), req, resp)
+    }
+    else {
+      ipizza.emit('success', _.extend({ transactionId: params.VK_T_NO
+                                      , amount: parseFloat(params.VK_AMOUNT)
+                                      , curr: params.VK_CURR
+                                      , receiver: params.VK_REC_ACC
+                                      , receiverName: params.VK_REC_NAME
+                                      , sender: params.VK_SND_ACC
+                                      , senderName: params.VK_SND_NAME
+                                      , date: params.VK_T_DATE
+                                      }, reply), req, resp)
+    }
   }
 }
 
