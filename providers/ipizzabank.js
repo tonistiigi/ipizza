@@ -249,7 +249,7 @@ IpizzaBank.prototype.json = function () {
 }
 
 IpizzaBank.prototype.genPackage_ = function (params) {
-  return _.reduce(params, function (memo, val, key) {
+  return this.lastPackage_ = _.reduce(params, function (memo, val, key) {
     val = val.toString()
     var len = (~['seb', 'lhv'].indexOf(this.name)) && this.utf8_ ?
       Buffer.byteLength(val, 'utf8') : val.length
@@ -352,7 +352,7 @@ IpizzaBank.prototype.pipe = function (resp) {
   html += '</head><body>'
   html += this.html()
   html += '</body></html>'
-  resp.set('Content-Type', 'text/html; charset='
+  resp.setHeader('Content-Type', 'text/html; charset='
     + (this.utf8_ ? 'utf-8' : 'iso-8859-1'))
   if (!this.utf8_) {
     var iconv = new Iconv( 'UTF-8', 'ISO-8859-1')

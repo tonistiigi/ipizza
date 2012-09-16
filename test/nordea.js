@@ -1,4 +1,5 @@
 var assert = require('assert')
+  , path = require('path')
 
 function validOpt() {
   return {
@@ -10,7 +11,6 @@ function validOpt() {
   , mac: '123'
   }
 }
-
 
 describe('nordea', function() {
   beforeEach(function() {
@@ -60,6 +60,25 @@ describe('nordea', function() {
     assert.doesNotThrow(function () {
       ipizza.payment({provider: 'nordea', algorithm: 'SHA256'})
     })
+  })
+
+  it('is on by default', function() {
+    var ipizza = require('../ipizza')
+    assert.doesNotThrow(function() {
+      ipizza.provider('nordea')
+    })
+  })
+  it('has gateway URLs for dev/production', function() {
+    var ipizza = require('../ipizza')
+    ipizza.set('env', 'production')
+    var payment = ipizza.payment('nordea')
+    var gw = payment.get('gateway')
+    assert.ok(gw.length > 0)
+    ipizza.set('env', 'development')
+    var payment2 = ipizza.payment('nordea')
+    var gw2 = payment2.get('gateway')
+    assert.ok(gw2.length > 0)
+    assert.notEqual(gw, gw2)
   })
 
   it('generates a reference number if none set', function() {

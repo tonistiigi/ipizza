@@ -6,7 +6,7 @@ function Swedbank (opt) {
 }
 Swedbank.prototype = Object.create(IpizzaBank.prototype)
 
-Swedbank.prototype.gateways = 
+Swedbank.prototype.gateways =
   { development: 'https://pangalink.net/banklink/008/swedbank'
   , production: 'https://www.swedbank.ee/banklink'
   }
