@@ -98,61 +98,83 @@ IpizzaBank.prototype.set = function (key, val) {
   }
 
   key = S(key).camelize().toString()
-  if (key === 'privateKey' || key === 'certificate') {
-    val = ipizza.file_(val)
-    if (key === 'privateKey' && !/private key/i.test(val)) {
-      ipizza.error_('privateKey', 'is in wrong format')
-    }
-    if (key === 'certificate' && !/certificate/i.test(val)) {
-      ipizza.error_('certificate', 'is in wrong format')
-    }
-  }
-  else if (key === 'amount') {
-    var amount = parseFloat(val)
-    if (isNaN(amount) || amount <= 0) {
-      return ipizza.error_('amount', 'is in wrong format')
-    }
-  }
-  else if (key === 'curr') {
-    val = val.toUpperCase()
-    if (val !== 'EUR') { // @todo: more supported?
-      return ipizza.error_('currency', 'is in wrong format')
-    }
-  }
-  else if (key === 'ref') {
-    if (val !== '' && val != ipizza.makeRefNumber(
-        val.toString().substr(0, val.toString().length - 1))) {
-        return ipizza.error_('reference number', 'is in wrong format')
+  switch (key) {
+    case 'privateKey':
+    case 'certificate':
+      val = ipizza.file_(val)
+      if (key === 'privateKey' && !/private key/i.test(val)) {
+        ipizza.error_('privateKey', 'is in wrong format')
       }
-  }
-  else if (key === 'lang') {
-    try {
+      if (key === 'certificate' && !/certificate/i.test(val)) {
+        ipizza.error_('certificate', 'is in wrong format')
+      }
+    break
+
+    case 'amount':
+      var amount = parseFloat(val)
+      if (isNaN(amount) || amount <= 0) {
+        return ipizza.error_('amount', 'is in wrong format')
+      }
+    break
+
+    case 'curr':
       val = val.toUpperCase()
-      if (!_.include(['EST', 'ENG', 'RUS'], val)) {
-        throw(new Error)
+      if (val !== 'EUR') { // @todo: more supported?
+        return ipizza.error_('currency', 'is in wrong format')
       }
-    }
-    catch (e) {
-      return ipizza.error_('language', 'is unknown for ipizza')
-    }
+    break
+
+    case 'ref':
+      if (val !== '' && val != ipizza.makeRefNumber(
+          val.toString().substr(0, val.toString().length - 1))) {
+            return ipizza.error_('reference number', 'is in wrong format')
+        }
+    break
+
+    case 'lang':
+      try {
+        val = val.toUpperCase()
+        if (!_.include(['EST', 'ENG', 'RUS'], val)) {
+          throw(new Error)
+        }
+      }
+      catch (e) {
+        return ipizza.error_('language', val + ' is unknown for ipizza')
+      }
+    break
+
+    case 'encoding':
+      try {
+        val = val.toLowerCase()
+        if (_.include(['utf', 'utf8', 'utf-8'], val)) {
+          val = 'UTF-8'
+        }
+        else if (_.include(['iso', 'iso-8859', 'iso-8859-1'], val)) {
+          val = 'ISO-8859-1'
+        }
+        else {
+          throw(new Error)
+        }
+      }
+      catch (e) {
+        return ipizza.error_('encoding', val + ' is unknown for ipizza')
+      }
+    break
+
+    case 'algorithm':
+      try {
+        val = val.toLowerCase()
+        if (!val || !_.include(['md5', 'sha1', 'sha256'], val)) {
+          throw(new Error)
+        }
+      }
+      catch (e) {
+        return ipizza.error_('algorithm', val + ' is unknown for ipizza ')
+      }
+    break
+
   }
-  else if (key === 'encoding') {
-    try {
-      val = val.toLowerCase()
-      if (_.include(['utf', 'utf8', 'utf-8'], val)) {
-        val = 'UTF-8'
-      }
-      else if (_.include(['iso', 'iso-8859', 'iso-8859-1'], valü)) {
-        val = 'ISO-8859-1'
-      }
-      else {
-        throw(new Error)
-      }
-    }
-    catch (e) {
-      return ipizza.error_('encoding', 'is unknown for ipizza')
-    }
-  }
+
   this.opt[key] = val
 }
 
@@ -164,21 +186,22 @@ IpizzaBank.prototype.get = function (key) {
 
 IpizzaBank.prototype.validate_ = function () {
   var ipizza = require(__dirname + '/../ipizza')
-  if (!this.get('clientId')) {
-    return ipizza.error_('payment', 'started without clientId')
+
+  var requiredFields = ['clientId', 'id', 'amount']
+
+  if (this.name === 'nordea') {
+    requiredFields = requiredFields.concat('algorithm', 'mac')
   }
-  if (!this.get('privateKey')) {
-    return ipizza.error_('payment', 'started without privateKey')
+  else {
+    requiredFields = requiredFields.concat('privateKey', 'certificate')
   }
-  if (!this.get('certificate')) {
-    return ipizza.error_('payment', 'started without certificate')
-  }
-  if (!this.get('id')) {
-    return ipizza.error_('payment', 'started without id')
-  }
-  if (!this.get('amount')) {
-    return ipizza.error_('payment', 'started without amount')
-  }
+  var self = this
+  requiredFields.forEach(function (field) {
+    if (!self.get(field)) {
+      return ipizza.error_('payment', 'started without ' + field)
+    }
+  })
+
 }
 
 IpizzaBank.prototype.json = function () {

@@ -4,7 +4,7 @@ var crypto = require('crypto')
 
 function Nordea (opt) {
   this.name = 'nordea'
-  if (!opt.algorithm) opt.algorithm = 'SHA1'
+  if (!opt.algorithm) opt.algorithm = 'sha1'
 
   // Pangalink.net uses ISO (like the spec) but Nordeas test site is UTF8.
   this.utf8_ = true;
@@ -16,10 +16,6 @@ Nordea.prototype.gateways =
   { development: 'https://pangalink.net/banklink/0003/nordea'
   , production: 'https://netbank.nordea.com/pnbepay/epayn.jsp'
   }
-
-Nordea.prototype.validate_ = function () {
-  IpizzaBank.prototype.validate_.apply(this, arguments)
-}
 
 Nordea.prototype.json = function () {
   this.validate_();
@@ -53,7 +49,7 @@ Nordea.prototype.json = function () {
              , params.SOLOPMT_CUR
              , this.get('mac')
              , ''].join('&')
-  var hash = crypto.createHash(this.get('algorithm').toLowerCase())
+  var hash = crypto.createHash(this.get('algorithm'))
   hash.update(pack)
   params.SOLOPMT_MAC = hash.digest('hex').toUpperCase()
   return params
