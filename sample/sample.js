@@ -1,3 +1,4 @@
+var path = require('path')
 var express = require('express')
 var app = express()
 
@@ -68,10 +69,11 @@ ipizza.on('error', function (reply, req, resp) {
   resp.end(require('util').inspect(reply, false, 3));
 })
 
-
-
 app.get('/', function (req, res) {
-  res.sendfile(__dirname + '/pay.html')
+  res.sendfile(path.join(__dirname, 'pay.html'))
+})
+app.get('/styles.css', function (req, res) {
+  res.sendfile(path.join(__dirname, 'styles.css'))
 })
 
 app.post('/pay', function (req, res) {
@@ -80,3 +82,4 @@ app.post('/pay', function (req, res) {
 })
 
 app.listen(4000)
+console.log('Application started at http://localhost:4000/')

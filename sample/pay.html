@@ -2,61 +2,69 @@
 <html>
   <head>
     <title>Payment sample</title>
+    <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
-    <form action="/pay" method="post" name="payform">
-      <table>
-        <tr>
-          <td>ID</td>
-          <td><input name="id" value="123"/></td>
-        </tr>
-        <tr>
-          <td>Amount</td>
-          <td><input name="amount" value="2.95"/></td>
-        </tr>
-        <tr>
-          <td>Currency</td>
-          <td><input name="curr" value="EUR"/></td>
-        </tr>
-        <tr>
-          <td>Ref no</td>
-          <td><input name="ref" value=""/></td>
-        </tr>
-        <tr>
-          <td>Message</td>
-          <td><input name="msg" value="Goods üÜõÕöÖäÄ"/></td>
-        </tr>
-        <tr>
-          <td>Lang</td>
-          <td><input name="lang" value="ENG"/></td>
-        </tr>
-        <tr>
-          <td>Receiver account</td>
-          <td><input name="account" value=""/></td>
-        </tr>
-        <tr>
-          <td>Receiver name</td>
-          <td><input name="accountName" value=""/></td>
-        </tr>
-        <tr>
-          <td>Encoding</td>
-          <td>
-            <select name="encoding">
-              <option value="UTF-8">UTF</option>
-              <option value="ISO-8859-1">ISO</option>
-            </select>
-          </td>
-        </tr>
-      </table>
-      <input type="hidden" name="provider">
-      <input type="button" onclick="document.payform['provider'].value='swedbank';document.payform.submit()" value="Swedbank">
-      <input type="button" onclick="document.payform['provider'].value='seb';document.payform.submit()" value="Seb">
-      <input type="button" onclick="document.payform['provider'].value='seb2';document.payform.submit()" value="Seb.ee">
-      <input type="button" onclick="document.payform['provider'].value='sampo';document.payform.submit()" value="Sampo">
-      <input type="button" onclick="document.payform['provider'].value='krediidipank';document.payform.submit()" value="Krediidipank">
-      <input type="button" onclick="document.payform['provider'].value='lhv';document.payform.submit()" value="LHV">
-      <input type="button" onclick="document.payform['provider'].value='nordea';document.payform.submit()" value="Nordea">
-      <input type="button" onclick="document.payform['provider'].value='nordea-plnet';document.payform.submit()" value="Nordea Panagalink.net">
-    </form>
+    <a href="https://github.com/tonistiigi/ipizza"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+    <div class="contents">
+      <h1>Test payment</h1>
+      <form action="/pay" method="post" name="payform">
+        <table>
+          <tr>
+            <td>ID</td>
+            <td><input name="id" value="123"/></td>
+          </tr>
+          <tr>
+            <td>Amount</td>
+            <td><input name="amount" value="2.95"/></td>
+          </tr>
+          <tr>
+            <td>Currency</td>
+            <td><input name="curr" value="EUR"/></td>
+          </tr>
+          <tr>
+            <td>Ref no</td>
+            <td><input name="ref" value=""/></td>
+          </tr>
+          <tr>
+            <td>Message</td>
+            <td><input name="msg" value="Goods üÜõÕöÖäÄ"/></td>
+          </tr>
+          <tr>
+            <td>Lang</td>
+            <td><input name="lang" value="ENG"/></td>
+          </tr>
+          <tr>
+            <td>Receiver account</td>
+            <td><input name="account" value=""/></td>
+          </tr>
+          <tr>
+            <td>Receiver name</td>
+            <td><input name="accountName" value=""/></td>
+          </tr>
+          <tr>
+            <td>Encoding</td>
+            <td>
+              <select name="encoding">
+                <option value="UTF-8">UTF</option>
+                <option value="ISO-8859-1">ISO</option>
+              </select>
+            </td>
+          </tr>
+        </table>
+        <div class="select-provider">
+          <div class="label">Click on a bank to begin payment:</div>
+        <input type="hidden" name="provider">
+        <input type="button" onclick="document.payform['provider'].value='swedbank';document.payform.submit()" value="Swedbank">
+        <input type="button" onclick="document.payform['provider'].value='seb';document.payform.submit()" value="Seb">
+        <input type="button" onclick="document.payform['provider'].value='seb2';document.payform.submit()" value="Seb.ee">
+        <input type="button" onclick="document.payform['provider'].value='sampo';document.payform.submit()" value="Sampo">
+        <input type="button" onclick="document.payform['provider'].value='krediidipank';document.payform.submit()" value="Krediidipank">
+        <input type="button" onclick="document.payform['provider'].value='lhv';document.payform.submit()" value="LHV">
+        <input type="button" onclick="document.payform['provider'].value='nordea';document.payform.submit()" value="Nordea.ee">
+        <input type="button" onclick="document.payform['provider'].value='nordea-plnet';document.payform.submit()" value="Nordea">
+        </div>
+      </form>
+    </div>
   </body>
 </html>
