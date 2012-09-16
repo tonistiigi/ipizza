@@ -85,22 +85,38 @@ describe('nordea', function() {
 
   })
   it('generates valid mac for utf8', function() {
+    var ipizza = require('../ipizza')
+    var json = ipizza.payment('nordea', {
+      clientId: 'abc'
+    , mac: 'pw'
+    , id: 10
+    , msg: 'öäüõÖÄÜÕ'
+    , amount: 10
+    , encoding: 'utf8'
+    }).json()
 
-  })
+    var result = '2566E368D757D907A3E5291863D1F3F2AEC8442B'
 
-  it('generates valid mac for iso', function() {
-
+    assert.strictEqual(json.SOLOPMT_MAC, result)
   })
 
   it('validates utf8 mac', function() {
+    var params = {
+      SOLOPMT_RETURN_VERSION: '0003',
+      SOLOPMT_RETURN_STAMP: '10',
+      SOLOPMT_RETURN_REF: '107',
+      SOLOPMT_RETURN_PAID: 'EPM1234567890',
+      SOLOPMT_RETURN_MAC: 'C0E80C8D6DAF9613D7A5226770A38D4F'
+    }
+    var ipizza = require('../ipizza')
+    var payment = ipizza.payment('nordea', {
+      mac: 'LEHTI'
+    , algorithm: 'md5'
+    })
+    assert.ok(payment.verify_(params))
 
+    params.SOLOPMT_RETURN_REF = '108'
+    assert.ok(!payment.verify_(params))
   })
 
-  it('validates iso mac', function() {
-
-  })
-
-  it('errors for invalid mac', function() {
-
-  })
 })
