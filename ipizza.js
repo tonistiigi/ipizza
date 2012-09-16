@@ -1,4 +1,6 @@
-var routes = require('routes')
+var Buffer = require('buffer').Buffer
+  , fs = require('fs')
+  , routes = require('routes')
   , S = require('string')
   , log = require('npmlog')
   , _ = require('underscore')._
@@ -19,6 +21,23 @@ ipizza.error_ = function (pfx, message) {
   }
   else {
     log.error(pfx, message)
+  }
+}
+
+ipizza.file_ = function (data) {
+  if (Buffer.isBuffer(data)) {
+    return data.toString('utf8')
+  }
+  else if (typeof data === 'string' && data.length) {
+    if (data.length < 200) { // Path.
+      return fs.readFileSync(data, 'utf8')
+    }
+    else { // Contents.
+      return data
+    }
+  }
+  else {
+    ipizza.error_('file', 'is in unknown format')
   }
 }
 
@@ -47,7 +66,7 @@ function createHandler() {
     }
 
     var match = router.match(req.url)
-    if (!match) {
+    if (!match || !providers[match.params.provider]) {
       next()
       return false
     }
@@ -122,7 +141,7 @@ ipizza.get = function (key) {
 
   key = S(key).camelize().toString()
   if (!opt.hasOwnProperty(key)) {
-    log.error('Can\'t get option %s. No such option.')
+    log.error('Can\'t get option ' + key + '. No such option.')
     return
   }
   return opt[key]
@@ -132,14 +151,23 @@ ipizza.provider = function (provider, opt) {
   if (provider instanceof Array) {
     return provider.forEach(ipizza.provider, opt)
   }
+  opt = opt || {}
   if (typeof provider === 'string') opt.provider = provider
   else opt = provider
+
+  if (opt.privateKey) {
+    opt.privateKey = ipizza.file_(opt.privateKey)
+  }
+  if (opt.certificate) {
+    opt.certificate = ipizza.file_(opt.certificate)
+  }
+
   var p = providers[opt.provider]
   if (opt.alias) {
     p = providers[opt.alias] = {klass: p.klass}
   }
   if (!p) {
-    log.error('provider setup', 'No such provider %s', opt.provider)
+    ipizza.error_('provider setup', 'No such provider ' + opt.provider)
   }
   else {
     p.opt = opt
@@ -147,11 +175,11 @@ ipizza.provider = function (provider, opt) {
 }
 
 ipizza.payment = function (provider, opt) {
-  if (typeof provider === 'string') opt.provider = opt
+  opt = opt || {}
+  if (typeof provider === 'string') opt.provider = provider
   else opt = provider
-
   if (!providers[opt.provider]) {
-    log.error('provider for request', 'No such provider %s', opt.provider)
+    ipizza.error_('provider for request', 'No such provider ' + opt.provider)
     return
   }
   return new providers[opt.provider].klass(
@@ -164,7 +192,7 @@ ipizza.response = function (provider, req, resp) {
     payment.response(req, resp)
   }
   else {
-    log.error('provider for response', 'No such provider %s.', provider)
+    ipizza.error_('provider for response', 'No such provider ' + provider)
   }
 }
 

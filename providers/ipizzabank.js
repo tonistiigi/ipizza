@@ -8,7 +8,11 @@ var Buffer = require('buffer').Buffer
 
 function IpizzaBank (opt) {
   this.opt = {}
-  this.set(opt)
+
+  this.set(_.extend({
+    curr: 'EUR'
+  , msg: 'Goods'
+  }, opt))
 
   if (!this.get('gateway')) {
     var ipizza = require(__dirname + '/../ipizza.js')
@@ -83,6 +87,7 @@ IpizzaBank.services =
   }
 
 IpizzaBank.prototype.set = function (key, val) {
+  var ipizza = require(__dirname + '/../ipizza')
   if (typeof key !== 'string') {
     for (var i in key) {
       if (key.hasOwnProperty(i)) this.set(i, key[i])
@@ -91,8 +96,33 @@ IpizzaBank.prototype.set = function (key, val) {
   }
 
   key = S(key).camelize().toString()
-  if (key == 'privateKey') val = fs.readFileSync(val)
-  if (key == 'certificate') val = fs.readFileSync(val)
+  if (key === 'privateKey' || key === 'certificate') {
+    val = ipizza.file_(val)
+    if (key === 'privateKey' && !/private key/i.test(val)) {
+      ipizza.error_('privateKey', 'is in wrong format')
+    }
+    if (key === 'certificate' && !/certificate/i.test(val)) {
+      ipizza.error_('certificate', 'is in wrong format')
+    }
+  }
+  else if (key === 'amount') {
+    var amount = parseFloat(val)
+    if (isNaN(amount) || amount <= 0) {
+      return ipizza.error_('amount', 'is in wrong format')
+    }
+  }
+  else if (key === 'curr') {
+    val = val.toUpperCase()
+    if (val !== 'EUR') { // @todo: more supported?
+      return ipizza.error_('currency', 'is in wrong format')
+    }
+  }
+  else if (key === 'ref') {
+    if (val !== '' && val != ipizza.makeRefNumber(
+        val.toString().substr(0, val.toString().length - 1))) {
+        return ipizza.error_('reference number', 'is in wrong format')
+      }
+  }
   this.opt[key] = val
 }
 
@@ -102,8 +132,27 @@ IpizzaBank.prototype.get = function (key) {
   return this.opt[key]
 }
 
+IpizzaBank.prototype.validate_ = function () {
+  var ipizza = require(__dirname + '/../ipizza')
+  if (!this.get('clientId')) {
+    return ipizza.error_('payment', 'started without clientId')
+  }
+  if (!this.get('privateKey')) {
+    return ipizza.error_('payment', 'started without privateKey')
+  }
+  if (!this.get('certificate')) {
+    return ipizza.error_('payment', 'started without certificate')
+  }
+  if (!this.get('id')) {
+    return ipizza.error_('payment', 'started without id')
+  }
+  if (!this.get('amount')) {
+    return ipizza.error_('payment', 'started without amount')
+  }
+}
 
 IpizzaBank.prototype.json = function () {
+  this.validate_();
   var params = _.clone(IpizzaBank.services[1002])
   if (this.get('account') && this.get('accountName')) {
     params = _.clone(IpizzaBank.services[1001])
@@ -140,7 +189,7 @@ IpizzaBank.prototype.json = function () {
   log.verbose('req mac', params['VK_MAC'])
 
   var ipizza = require(__dirname + '/../ipizza.js')
-  params['VK_RETURN'] = ipizza.get('return') || ipizza.get('hostname') +
+  params['VK_RETURN'] = this.get('return') || ipizza.get('hostname') +
     ipizza.get('returnRoute').replace(':provider', this.get('provider'))
   log.verbose('req body', params)
   return params
