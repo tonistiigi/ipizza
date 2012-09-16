@@ -12,6 +12,8 @@ function IpizzaBank (opt) {
   this.set(_.extend({
     curr: 'EUR'
   , msg: 'Goods'
+  , lang: 'ENG'
+  , encoding: 'utf'
   }, opt))
 
   if (!this.get('gateway')) {
@@ -122,6 +124,34 @@ IpizzaBank.prototype.set = function (key, val) {
         val.toString().substr(0, val.toString().length - 1))) {
         return ipizza.error_('reference number', 'is in wrong format')
       }
+  }
+  else if (key === 'lang') {
+    try {
+      val = val.toUpperCase()
+      if (!_.include(['EST', 'ENG', 'RUS'], val)) {
+        throw(new Error)
+      }
+    }
+    catch (e) {
+      return ipizza.error_('language', 'is unknown for ipizza')
+    }
+  }
+  else if (key === 'encoding') {
+    try {
+      val = val.toLowerCase()
+      if (_.include(['utf', 'utf8', 'utf-8'], val)) {
+        val = 'UTF-8'
+      }
+      else if (_.include(['iso', 'iso-8859', 'iso-8859-1'], valü)) {
+        val = 'ISO-8859-1'
+      }
+      else {
+        throw(new Error)
+      }
+    }
+    catch (e) {
+      return ipizza.error_('encoding', 'is unknown for ipizza')
+    }
   }
   this.opt[key] = val
 }

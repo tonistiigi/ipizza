@@ -64,8 +64,7 @@ function createHandler() {
       next()
       return false
     }
-
-    var match = router.match(req.url)
+    var match = router.match(req.url.split('?')[0])
     if (!match || !providers[match.params.provider]) {
       next()
       return false

@@ -163,10 +163,48 @@ describe('payment', function() {
     var payment = ipizza.payment('swedbank')
     assert.ok(payment.get('msg') && payment.get('msg').length)
   })
+  it('has default language', function() {
+    var ipizza = require('../ipizza')
+    var payment = ipizza.payment('swedbank')
+    assert.strictEqual(payment.get('lang'), 'ENG')
+  })
   it('throws on invalid lang', function() {
     var ipizza = require('../ipizza')
+    assert.throws(function() {
+      ipizza.payment({provider: 'swedbank', lang: 'bla'})
+    }, /language/i)
+    assert.throws(function() {
+      ipizza.payment({provider: 'swedbank', lang: null})
+    }, /language/i)
+    assert.doesNotThrow(function() {
+      ipizza.payment({provider: 'swedbank', lang: 'eng'})
+    })
+    assert.doesNotThrow(function() {
+      ipizza.payment({provider: 'swedbank', lang: 'EST'})
+    })
   })
   it('throws on invalid encoding', function() {
     var ipizza = require('../ipizza')
+    assert.throws(function() {
+      ipizza.payment({provider: 'swedbank', encoding: 'bla'})
+    }, /encoding/i)
+    assert.throws(function() {
+      ipizza.payment({provider: 'swedbank', encoding: null})
+    }, /encoding/i)
+    assert.doesNotThrow(function() {
+      ipizza.payment({provider: 'swedbank', encoding: 'utf'})
+    })
+    assert.doesNotThrow(function() {
+      ipizza.payment({provider: 'swedbank', encoding: 'utf-8'})
+    })
+    assert.doesNotThrow(function() {
+      ipizza.payment({provider: 'swedbank', encoding: 'UTF8'})
+    })
+    assert.doesNotThrow(function() {
+      ipizza.payment({provider: 'swedbank', encoding: 'iso'})
+    })
+    assert.doesNotThrow(function() {
+      ipizza.payment({provider: 'swedbank', encoding: 'ISO-8859-1'})
+    })
   })
 })

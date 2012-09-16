@@ -17,7 +17,12 @@ Nordea.prototype.gateways =
   , production: 'https://netbank.nordea.com/pnbepay/epayn.jsp'
   }
 
+Nordea.prototype.validate_ = function () {
+  IpizzaBank.prototype.validate_.apply(this, arguments)
+}
+
 Nordea.prototype.json = function () {
+  this.validate_();
   var ipizza = require(__dirname + '/../ipizza.js')
   var params = {}
   params.SOLOPMT_VERSION = '0003'
@@ -33,7 +38,7 @@ Nordea.prototype.json = function () {
   params.SOLOPMT_DATE = 'EXPRESS'
   params.SOLOPMT_MSG = this.get('msg')
   params.SOLOPMT_RETURN = params.SOLOPMT_CANCEL = params.SOLOPMT_REJECT =
-    ipizza.get('return') || ipizza.get('hostname') +
+    this.get('return') || ipizza.get('hostname') +
       ipizza.get('returnRoute').replace(':provider', this.get('provider'))
 
   params.SOLOPMT_KEYVERS = '0001'
