@@ -61,13 +61,15 @@ ipizza.provider(
   ])
 
 ipizza.on('success', function (reply, req, resp) {
+  resp.setHeader('Content-Type', 'text/html; charset=utf-8')
   resp.write('Payment OK!')
-  resp.end(require('util').inspect(reply, false, 3))
+  resp.end(JSON.stringify(reply, 4))
 })
 
 ipizza.on('error', function (reply, req, resp) {
+  resp.setHeader('Content-Type', 'text/html; charset=utf-8')
   resp.write('Payment Error!');
-  resp.end(require('util').inspect(reply, false, 3));
+  resp.end(JSON.stringify(reply, 4))
 })
 
 app.get('/', function (req, res) {
