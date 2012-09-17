@@ -14,6 +14,7 @@ npm install ipizza
 
 ```
 npm test
+node casperjs/runner.js       # requires CasperJS
 ```
 
 **Sample:**
