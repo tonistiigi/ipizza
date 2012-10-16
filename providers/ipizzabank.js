@@ -105,7 +105,7 @@ IpizzaBank.prototype.set = function (key, val) {
       if (key === 'privateKey' && !/private key/i.test(val)) {
         ipizza.error_('privateKey', 'is in wrong format')
       }
-      if (key === 'certificate' && !/certificate/i.test(val)) {
+      if (key === 'certificate' && !/certificate|public key/i.test(val)) {
         ipizza.error_('certificate', 'is in wrong format')
       }
     break
