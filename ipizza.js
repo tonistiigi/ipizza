@@ -163,13 +163,13 @@ ipizza.provider = function (provider, opt) {
 
   var p = providers[opt.provider]
   if (opt.alias) {
-    p = providers[opt.alias] = {klass: p.klass}
+    p = providers[opt.alias] = providers[opt.alias] || {klass: p.klass, opt: {}}
   }
   if (!p) {
     ipizza.error_('provider setup', 'No such provider ' + opt.provider)
   }
   else {
-    p.opt = opt
+    p.opt = _.extend(p.opt, opt)
   }
 }
 
