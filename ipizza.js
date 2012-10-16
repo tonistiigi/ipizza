@@ -103,12 +103,12 @@ ipizza.set = function (key, val) {
   key = S(key).camelize().toString()
 
   if (key === 'appHandler') {
-    if (!(val === undefined || typeof val.use === 'function')) {
+    if (!(val === undefined || typeof val.all === 'function')) {
       return ipizza.error_('appHandler', 'is not valid' + val)
     }
     var f = createHandler()
     if (val) {
-      val.use(f)
+      val.all('*', f)
     }
     val = f
   }
