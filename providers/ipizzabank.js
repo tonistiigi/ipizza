@@ -184,17 +184,15 @@ IpizzaBank.prototype.get = function (key) {
   return this.opt[key]
 }
 
+IpizzaBank.prototype.requiredFields_ = function () {
+  return ['clientId', 'id', 'amount', 'privateKey', 'certificate']
+}
+
 IpizzaBank.prototype.validate_ = function () {
   var ipizza = require(__dirname + '/../ipizza')
 
-  var requiredFields = ['clientId', 'id', 'amount']
+  var requiredFields = this.requiredFields_()
 
-  if (this.name === 'nordea') {
-    requiredFields = requiredFields.concat('algorithm', 'mac')
-  }
-  else {
-    requiredFields = requiredFields.concat('privateKey', 'certificate')
-  }
   var self = this
   requiredFields.forEach(function (field) {
     if (!self.get(field)) {

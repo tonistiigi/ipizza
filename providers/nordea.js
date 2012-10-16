@@ -18,6 +18,10 @@ Nordea.prototype.gateways =
   , production: 'https://netbank.nordea.com/pnbepay/epayn.jsp'
   }
 
+Nordea.prototype.requiredFields_ = function () {
+  return ['clientId', 'id', 'amount', 'algorithm', 'mac']
+}
+
 Nordea.prototype.json = function () {
   this.validate_();
   var ipizza = require(__dirname + '/../ipizza.js')
