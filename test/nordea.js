@@ -82,7 +82,17 @@ describe('nordea', function() {
   })
 
   it('generates a reference number if none set', function() {
+    var ipizza = require('../ipizza')
+    var json = ipizza.payment('nordea', {
+      clientId: 'abc'
+    , mac: 'pw'
+    , id: 9999
+    , msg: 'öäüõÖÄÜÕ'
+    , amount: 10
+    , encoding: 'utf8'
+    }).json()
 
+    assert.strictEqual(json.SOLOPMT_REF, 99998)
   })
   it('generates valid mac for utf8', function() {
     var ipizza = require('../ipizza')
