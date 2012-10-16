@@ -210,6 +210,7 @@ ipizza.set(
   , throwOnErrors: true
   })
 
+ipizza.IpizzaBank = require(__dirname + '/providers/ipizzabank.js')
 
 // Define providers.
 ;[ 'swedbank'
