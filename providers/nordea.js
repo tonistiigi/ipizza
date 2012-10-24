@@ -90,21 +90,24 @@ Nordea.prototype.response = function (req, resp) {
   catch (e) {
     ret = 0
   }
-  var reply = { provider: this.name
-              , bankId: 'nordea'
-              , clientId: this.get('clientId')
-              , id: params.SOLOPMT_RETURN_STAMP
-              , ref: params.SOLOPMT_RETURN_REF
-              }
+  var reply = { provider: this.name }
   if (!ret) {
     ipizza.emit('error', _.extend({type: 'not verified'}, reply), req, resp)
   }
-  else if (!params.SOLOPMT_RETURN_PAID) {
-    ipizza.emit('error', _.extend({type: 'not paid'}, reply), req, resp)
-  }
   else {
-    ipizza.emit('success', _.extend(
-      {transactionId: params.SOLOPMT_RETURN_PAID}, reply), req, resp)
+    reply = _.extend(reply, {
+        bankId: 'nordea'
+      , clientId: this.get('clientId')
+      , id: params.SOLOPMT_RETURN_STAMP
+      , ref: params.SOLOPMT_RETURN_REF
+    })
+    if (!params.SOLOPMT_RETURN_PAID) {
+      ipizza.emit('error', _.extend({type: 'not paid'}, reply), req, resp)
+    }
+    else {
+      ipizza.emit('success', _.extend(
+        {transactionId: params.SOLOPMT_RETURN_PAID}, reply), req, resp)
+    }
   }
 }
 

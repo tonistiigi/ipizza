@@ -325,15 +325,7 @@ IpizzaBank.prototype.response = function (req, resp) {
       log.verbose('resp body', params)
 
       var ret = self.verify_(params)
-      var reply = { provider: self.name
-                  , bankId: params.VK_SND_ID
-                  , clientId: params.VK_REC_ID
-                  , id: params.VK_STAMP
-                  , ref: params.VK_REF
-                  , msg: params.VK_MSG
-                  , lang: params.VK_LANG
-                  , isAuto: params.VK_AUTO === 'Y'
-                  }
+      var reply = { provider: self.name };
     }
     catch (e) {
       ret = 0
@@ -342,19 +334,30 @@ IpizzaBank.prototype.response = function (req, resp) {
     if (!ret) {
       ipizza.emit('error', _.extend({type: 'not verified'}, reply), req, resp)
     }
-    else if (params.VK_SERVICE === '1901') {
-      ipizza.emit('error', _.extend({type: 'not paid'}, reply), req, resp)
-    }
     else {
-      ipizza.emit('success', _.extend({ transactionId: params.VK_T_NO
-                                      , amount: parseFloat(params.VK_AMOUNT)
-                                      , curr: params.VK_CURR
-                                      , receiver: params.VK_REC_ACC
-                                      , receiverName: params.VK_REC_NAME
-                                      , sender: params.VK_SND_ACC
-                                      , senderName: params.VK_SND_NAME
-                                      , date: params.VK_T_DATE
-                                      }, reply), req, resp)
+      reply = _.extend(reply, {
+        bankId: params.VK_SND_ID
+      , clientId: params.VK_REC_ID
+      , id: params.VK_STAMP
+      , ref: params.VK_REF
+      , msg: params.VK_MSG
+      , lang: params.VK_LANG
+      , isAuto: params.VK_AUTO === 'Y'
+      })
+      if (params.VK_SERVICE === '1901') {
+        ipizza.emit('error', _.extend({type: 'not paid'}, reply), req, resp)
+      }
+      else {
+        ipizza.emit('success', _.extend({ transactionId: params.VK_T_NO
+                                        , amount: parseFloat(params.VK_AMOUNT)
+                                        , curr: params.VK_CURR
+                                        , receiver: params.VK_REC_ACC
+                                        , receiverName: params.VK_REC_NAME
+                                        , sender: params.VK_SND_ACC
+                                        , senderName: params.VK_SND_NAME
+                                        , date: params.VK_T_DATE
+                                        }, reply), req, resp)
+      }
     }
   }
 }
