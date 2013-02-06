@@ -8,7 +8,7 @@ Sampo.prototype = Object.create(IpizzaBank.prototype)
  
 Sampo.prototype.gateways = 
   { development: 'https://pangalink.net/banklink/008/sampo'
-  , production: 'https://www2.sampopank.ee/ibank/pizza/pizza'
+  , production: 'https://www2.danskebank.ee/ibank/pizza/pizza'
   }
 
 
