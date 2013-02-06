@@ -73,6 +73,8 @@ var html = payment.html()
 
 **Response handling**
 
+*Note that after `success` event you also have to check that the amount matches the Order ID/Reference number based on your stored request data. If you don't do this payment response could potentially be faked.*
+
 ```javascript
 ipizza.on('success', function (reply, req, resp) {
   /*
