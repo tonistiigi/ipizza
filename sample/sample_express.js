@@ -14,12 +14,12 @@ ipizza.set({
 
 ipizza.provider(
   [ { provider: 'swedbank'
-    , clientId: 'uid202196'
+    , clientId: 'uid355551'
     , privateKey: __dirname + '/keys/swedbank.key.pem'
     , certificate: __dirname + '/keys/swedbank.cert.pem'
     }
   , { provider: 'seb'
-    , clientId: 'uid203519'
+    , clientId: 'uid355577'
     , privateKey: __dirname + '/keys/seb.key.pem'
     , certificate: __dirname + '/keys/seb.cert.pem'
     }
@@ -31,17 +31,17 @@ ipizza.provider(
     , alias: 'seb2'
     }
   , { provider: 'sampo'
-    , clientId: 'uid203713'
+    , clientId: 'uid355580'
     , privateKey: __dirname + '/keys/sampo.key.pem'
     , certificate: __dirname + '/keys/sampo.cert.pem'
     }
   , { provider: 'krediidipank'
-    , clientId: 'uid205258'
+    , clientId: 'uid355603'
     , privateKey: __dirname + '/keys/krediidipank.key.pem'
     , certificate: __dirname + '/keys/krediidipank.cert.pem'
     }
   , { provider: 'lhv'
-    , clientId: 'uid205300'
+    , clientId: 'uid355616'
     , privateKey: __dirname + '/keys/lhv.key.pem'
     , certificate: __dirname + '/keys/lhv.cert.pem'
     }
@@ -53,9 +53,9 @@ ipizza.provider(
     , mac: 'LEHTI'
     }
   , { provider: 'nordea'
-    , clientId: '10205504'
+    , clientId: '10355742'
     , algorithm: 'SHA256'
-    , mac: 'dmzqcD99hgkgPFJ1tNh0BFLElpAxBRXT'
+    , mac: 'SMqkXi5T0SM0fNfn9F5GTggPPTT3I5xq'
     , alias: 'nordea-plnet'
     }
   ])
