@@ -1,5 +1,8 @@
 var path = require('path')
 var express = require('express')
+
+if (!require('./keys/prepare.js')()) return
+
 var app = express()
 
 app.use(express.bodyParser())
