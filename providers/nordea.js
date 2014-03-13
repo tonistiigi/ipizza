@@ -14,7 +14,7 @@ function Nordea (opt) {
 Nordea.prototype = Object.create(IpizzaBank.prototype)
 
 Nordea.prototype.gateways =
-  { development: 'https://pangalink.net/banklink/0003/nordea'
+  { development: 'https://pangalink.net/banklink/nordea'
   , production: 'https://netbank.nordea.com/pnbepay/epayn.jsp'
   }
 
