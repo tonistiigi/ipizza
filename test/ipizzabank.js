@@ -1,7 +1,7 @@
 var assert = require('assert')
   , http = require('http')
   , path = require('path')
-  , Iconv = require('iconv').Iconv
+  , iconv = require('iconv-lite')
 
 describe('ipizzabank', function() {
   beforeEach(function() {
@@ -35,8 +35,7 @@ describe('ipizzabank', function() {
     assert.ok(resp.output[1].toString('utf8')
       .indexOf('name="VK_MSG" value="öäüõÖÄÜÕ">') === -1)
 
-    var iconv = new Iconv('ISO-8859-1', 'UTF-8')
-    var html = iconv.convert(resp.output[1]).toString('utf8')
+    var html = iconv.decode(Buffer(resp.output[1]), 'ISO-8859-1')
 
     assert.ok(html.indexOf('name="VK_MSG" value="öäüõÖÄÜÕ">') !== -1)
 

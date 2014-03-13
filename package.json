@@ -24,9 +24,9 @@
   "dependencies": {
     "npmlog": "0.0.6",
     "string": "^1.8.0",
-    "iconv": "~1.2.3",
     "routes": "^0.2.0",
-    "lodash": "^2.4.1"
+    "lodash": "^2.4.1",
+    "iconv-lite": "^0.2.11"
   },
   "devDependencies": {
     "express": "^3.4.8",
