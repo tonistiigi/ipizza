@@ -4,7 +4,7 @@ var Buffer = require('buffer').Buffer
   , Iconv = require('iconv').Iconv
   , S = require('string')
   , log = require('npmlog')
-  , _ = require('underscore')._
+  , _ = require('lodash')._
 
 function IpizzaBank (opt) {
   this.opt = {}
