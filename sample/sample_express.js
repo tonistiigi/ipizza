@@ -77,9 +77,10 @@ var nordea = require('./keys/ipizza_test_nordea')
 ipizza.provider(
   { provider: 'nordea'
   , clientId: nordea.client_id
-  , algorithm: nordea.algo.toUpperCase()
+  , algorithm: 'sha1'
   , mac: nordea.mac_key
   , alias: 'nordea-plnet'
+  , forceISO: true
   })
 
 ipizza.on('success', function (reply, req, resp) {
