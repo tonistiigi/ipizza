@@ -1,7 +1,7 @@
 var crypto = require('crypto')
   , path = require('path')
   , IpizzaBank = require('./ipizzabank')
-  , _ = require('underscore')._
+  , _ = require('lodash')._
 
 function Nordea (opt) {
   this.name = 'nordea'

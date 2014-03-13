@@ -3,7 +3,7 @@ var Buffer = require('buffer').Buffer
   , routes = require('routes')
   , S = require('string')
   , log = require('npmlog')
-  , _ = require('underscore')._
+  , _ = require('lodash')._
 
 var ipizza = Object.create(require('events').EventEmitter.prototype)
   , opt = {}
