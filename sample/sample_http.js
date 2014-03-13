@@ -4,60 +4,83 @@ var path = require('path')
 var fs = require('fs')
 var querystring = require('querystring')
 
-var ipizza = require('../ipizza')
+if (!require('./keys/prepare.js')()) return
+
+var ipizza = require('../')
 
 ipizza.set({
   hostname: 'http://localhost:4000'
 , logLevel: 'verbose'
 })
 
+var swedbank = require('./keys/ipizza_test_swedbank')
 ipizza.provider(
-  [ { provider: 'swedbank'
-    , clientId: 'uid202196'
-    , privateKey: __dirname + '/keys/swedbank.key.pem'
-    , certificate: __dirname + '/keys/swedbank.cert.pem'
-    }
-  , { provider: 'seb'
-    , clientId: 'uid203519'
-    , privateKey: __dirname + '/keys/seb.key.pem'
-    , certificate: __dirname + '/keys/seb.cert.pem'
-    }
-  , { provider: 'seb'
-    , gateway: 'https://www.seb.ee/cgi-bin/dv.sh/ipank.r'
-    , clientId: 'testvpos'
-    , privateKey: __dirname + '/keys/seb2.key.pem'
-    , certificate: __dirname + '/keys/seb2.cert.pem'
-    , alias: 'seb2'
-    }
-  , { provider: 'sampo'
-    , clientId: 'uid203713'
-    , privateKey: __dirname + '/keys/sampo.key.pem'
-    , certificate: __dirname + '/keys/sampo.cert.pem'
-    }
-  , { provider: 'krediidipank'
-    , clientId: 'uid205258'
-    , privateKey: __dirname + '/keys/krediidipank.key.pem'
-    , certificate: __dirname + '/keys/krediidipank.cert.pem'
-    }
-  , { provider: 'lhv'
-    , clientId: 'uid205300'
-    , privateKey: __dirname + '/keys/lhv.key.pem'
-    , certificate: __dirname + '/keys/lhv.cert.pem'
-    }
-  // Customer number: 111111    Password: 9999
-  , { provider: 'nordea'
-    , gateway: 'https://netbank.nordea.com/pnbepaytest/epayn.jsp'
-    , clientId: '12345678'
-    , algorithm: 'md5'
-    , mac: 'LEHTI'
-    }
-  , { provider: 'nordea'
-    , clientId: '10205504'
-    , algorithm: 'SHA256'
-    , mac: 'dmzqcD99hgkgPFJ1tNh0BFLElpAxBRXT'
-    , alias: 'nordea-plnet'
-    }
-  ])
+  { provider: 'swedbank'
+  , clientId: swedbank.client_id
+  , privateKey: swedbank.private_key
+  , certificate: swedbank.bank_certificate
+  })
+
+var seb = require('./keys/ipizza_test_seb')
+ipizza.provider(
+  { provider: 'seb'
+  , clientId: seb.client_id
+  , privateKey: seb.private_key
+  , certificate: seb.bank_certificate
+  })
+
+ipizza.provider(
+  { provider: 'seb'
+  , gateway: 'https://www.seb.ee/cgi-bin/dv.sh/ipank.r'
+  , clientId: 'testvpos'
+  , privateKey: __dirname + '/keys/seb2.key.pem'
+  , certificate: __dirname + '/keys/seb2.cert.pem'
+  , alias: 'seb2'
+  })
+
+var sampo = require('./keys/ipizza_test_sampo')
+ipizza.provider(
+  { provider: 'sampo'
+  , clientId: sampo.client_id
+  , privateKey: sampo.private_key
+  , certificate: sampo.bank_certificate
+  })
+
+var krediidipank = require('./keys/ipizza_test_krediidipank')
+ipizza.provider(
+  { provider: 'krediidipank'
+  , clientId: krediidipank.client_id
+  , privateKey: krediidipank.private_key
+  , certificate: krediidipank.bank_certificate
+  })
+
+var lhv = require('./keys/ipizza_test_lhv')
+ipizza.provider(
+  { provider: 'lhv'
+  , clientId: lhv.client_id
+  , privateKey: lhv.private_key
+  , certificate: lhv.bank_certificate
+  })
+
+// Customer number: 111111    Password: 9999
+ipizza.provider(
+  { provider: 'nordea'
+  , gateway: 'https://netbank.nordea.com/pnbepaytest/epayn.jsp'
+  , clientId: '12345678'
+  , algorithm: 'md5'
+  , mac: 'LEHTI'
+  })
+
+var nordea = require('./keys/ipizza_test_nordea')
+ipizza.provider(
+  { provider: 'nordea'
+  , clientId: nordea.client_id
+  , algorithm: 'sha1'
+  , mac: nordea.mac_key
+  , alias: 'nordea-plnet'
+  , forceISO: true
+  })
+
 
 ipizza.on('success', function (reply, req, resp) {
   resp.setHeader('Content-Type', 'text/html; charset=utf-8')
