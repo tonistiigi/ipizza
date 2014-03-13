@@ -7,7 +7,7 @@ function Krediidipank (opt) {
 Krediidipank.prototype = Object.create(IpizzaBank.prototype)
 
 Krediidipank.prototype.gateways =
-  { development: 'https://pangalink.net/banklink/008/krediidipank'
+  { development: 'https://pangalink.net/banklink/krediidipank'
   , production: 'https://i-pank.krediidipank.ee/teller/maksa'
   }
 
