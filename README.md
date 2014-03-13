@@ -259,10 +259,6 @@ It's up to you then to have something listening on that URL. When you have captu
 
 By default ipizza throws on errors. That is correct behaviour as the API is synchronous. If you don't like it in your production environment you can disable it by calling `ipizza.set('throwOnErrors', false)`. Still, if your not sure if your data can produce errors you should put the function calls inside a try/catch block or set up a domain. Chances are, your own code will throw if it doesn't get any reasonable data back because of an error.
 
-#### Windows support
-
-ipizza runs fine on Windows but uses native components for encoding conversions. So you have to install node-gyp, Python and Visual Studio (Express) C++ 2010 first.
-
 #### Contributing
 
 This repo uses [npm coding style](https://npmjs.org/doc/coding-style.html).

@@ -1,7 +1,7 @@
 var Buffer = require('buffer').Buffer
   , crypto = require('crypto')
   , fs = require('fs')
-  , Iconv = require('iconv').Iconv
+  , iconv = require('iconv-lite')
   , S = require('string')
   , log = require('npmlog')
   , _ = require('lodash')._
@@ -266,8 +266,7 @@ IpizzaBank.prototype.genMac_ = function (params) {
     return memo
   }, {}))
   if (this.utf8_) {
-    var iconv = new Iconv('ISO-8859-1', 'UTF-8')
-    pack = iconv.convert(pack.toString()).toString('utf8')
+    pack = iconv.decode(Buffer(pack.toString()), 'ISO-8859-1')
   }
 
   log.verbose('req package', pack)
@@ -290,8 +289,7 @@ IpizzaBank.prototype.verify_ = function (body) {
     }, {})
   var pack = this.genPackage_(params)
   if (this.utf8_) {
-    var iconv = new Iconv('ISO-8859-1', 'UTF-8');
-    pack = iconv.convert(pack).toString('utf8');
+    pack = iconv.decode(Buffer(pack), 'ISO-8859-1').toString('utf8')
   }
   log.verbose('resp package', pack)
   log.verbose('resp mac', body.VK_MAC)
@@ -387,8 +385,7 @@ IpizzaBank.prototype.pipe = function (resp) {
   resp.setHeader('Content-Type', 'text/html; charset='
     + (this.utf8_ ? 'utf-8' : 'iso-8859-1'))
   if (!this.utf8_) {
-    var iconv = new Iconv( 'UTF-8', 'ISO-8859-1')
-    resp.end(iconv.convert(html))
+    resp.end(iconv.encode(html, 'ISO-8859-1'))
   }
   else {
     resp.end(html)
