@@ -2,7 +2,7 @@ casper.options.pageSettings.webSecurityEnabled = false
 
 var timeout = 700
 
-;['swedbank', 'seb', 'krediidipank', 'sampo', 'nordea-plnet']
+;['swedbank', 'seb', 'krediidipank', 'sampo', 'lhv', 'nordea-plnet']
   .forEach(function(provider) {
 
 casper.test.begin('Test provider: ' + provider, 6, function(test) {
