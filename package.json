@@ -31,6 +31,6 @@
   "devDependencies": {
     "express": "^3.4.8",
     "mocha": "^1.17.1",
-    "pangalink.net-client": "git://github.com/tonistiigi/pangalink.net-client.git"
+    "pangalink.net-client": "^1.1.0"
   }
 }
