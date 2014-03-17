@@ -21,7 +21,7 @@ console.log('Started sample.');
 setTimeout(function() {
 
   casper = spawn('casperjs', [
-    path.join(__dirname, 'test.js')
+    'test', path.join(__dirname, 'test.js')
   ])
   casper.stdout.pipe(process.stdout)
   casper.on('exit', function(code) {
