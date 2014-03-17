@@ -1,9 +1,11 @@
 casper.options.pageSettings.webSecurityEnabled = false
 
+var timeout = 700
+
 ;['swedbank', 'seb', 'krediidipank', 'sampo', 'nordea-plnet']
   .forEach(function(provider) {
 
-casper.test.begin('Test provider: ' + provider, 5, function(test) {
+casper.test.begin('Test provider: ' + provider, 6, function(test) {
   casper.start()
   casper.open('http://127.0.0.1:4000/')
   var dopay = true
@@ -13,13 +15,14 @@ casper.test.begin('Test provider: ' + provider, 5, function(test) {
   casper.then(function() {
 
     this.fill('form', {
-      'id': orderId
-    , 'amount': 1.23
-    , 'provider': provider
+      id: orderId
+    , amount: 1.23
+    , msg: msg
+    , provider: provider
     }, true)
   })
   casper.then(function() {
-    this.wait(500, function() {
+    this.wait(timeout, function() {
       var state = this.evaluate(function() {
         return document.querySelector("[data-current-state]").dataset.currentState
       })
@@ -29,7 +32,7 @@ casper.test.begin('Test provider: ' + provider, 5, function(test) {
   })
 
   casper.then(function() {
-    this.wait(500, function() {
+    this.wait(timeout, function() {
       var state = this.evaluate(function() {
         return document.body.innerHTML
       })
@@ -43,7 +46,7 @@ casper.test.begin('Test provider: ' + provider, 5, function(test) {
   })
 
   casper.then(function() {
-    this.wait(500, function() {
+    this.wait(timeout, function() {
       var output = this.evaluate(function() {
         return document.body.innerText
       })
@@ -61,11 +64,13 @@ casper.test.begin('Test provider: ' + provider, 5, function(test) {
         this.test.assertEquals(json.id, orderId.toString(), 'Check orderId in response')
         if (provider !== 'nordea-plnet') {
           this.test.assertEquals(json.amount, 1.23, 'Check amount in response')
+          this.test.assertEquals(json.msg, msg, 'Check message in response')
         }
         else {
           this.test.assert(true)
+          this.test.assert(true)
         }
-        casper.wait(600, function() {
+        casper.wait(timeout, function() {
           test.done()
         })
       }
