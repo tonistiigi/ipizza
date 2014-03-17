@@ -1,11 +1,10 @@
 language: node_js
 node_js:
   - 0.8
-  - 0.10
 before_install:
   - git clone git://github.com/n1k0/casperjs.git casperjs_repo
   - cd casperjs_repo
-  - git checkout tags/1.0.2
+  - git checkout tags/1.0.0-RC1
   - sudo ln -sf `pwd`/bin/casperjs /usr/local/bin/casperjs
   - cd ..
 script: "npm test && node casperjs/runner.js"
