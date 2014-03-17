@@ -1,10 +1,16 @@
 language: node_js
 node_js:
-  - 0.8
+  - 0.10
+env:
+  global:
+  - secure: hpi5mk73eRIzst2rxkD4P445QiYFA6vO8gSUSBW1607fMMcNpeqBa1On47r1llLxEbAkkRymBTT2juLSBAQIY912NK4i8RIaF5Qy4vYi24ao2oR0G/bWnQ3YlgVhftC4tvKT25PDFPA3h6zONMjGtbm6pTNw2lV5g+KrTZ/IRK0=
+  - secure: TsSHnC6gg7AWTqLxlg+Uw/CILq6c+7YwbE9GoV8D83iz/cbYSjoiGle6mJx04qx+UlHCdTL96gxVdbEgcFeR07izsj8TNnE7bUGNBZz14JefEMUnJle9qh1OR0pI2U23yXtsfnb2u+CpxPohKKk7+URJO5WR+qyv9Uy8OhSPpWo=
 before_install:
   - git clone git://github.com/n1k0/casperjs.git casperjs_repo
   - cd casperjs_repo
-  - git checkout tags/1.0.0-RC1
+  - git checkout tags/1.1-beta3
   - sudo ln -sf `pwd`/bin/casperjs /usr/local/bin/casperjs
   - cd ..
+  - npm install
+  - node sample/sample_express.js
 script: "npm test && node casperjs/runner.js"
