@@ -22,11 +22,12 @@
   "author": "Tõnis Tiigi <tonistiigi@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "npmlog": "0.0.6",
-    "string": "^1.8.0",
-    "routes": "^0.2.0",
+    "iconv-lite": "^0.2.11",
     "lodash": "^2.4.1",
-    "iconv-lite": "^0.2.11"
+    "moment": "^2.5.1",
+    "npmlog": "0.0.6",
+    "routes": "^0.2.0",
+    "string": "^1.8.0"
   },
   "devDependencies": {
     "express": "^3.4.8",

@@ -1,8 +1,8 @@
 casper.options.pageSettings.webSecurityEnabled = false
 
-var timeout = 700
+var timeout = 1500
 
-;['swedbank', 'seb', 'krediidipank', 'sampo', 'lhv', 'nordea-plnet']
+;['swedbank', 'seb', 'krediidipank', 'sampo', 'lhv', 'nordea-plnet', 'ec']
   .forEach(function(provider) {
 
 casper.test.begin('Test provider: ' + provider, 6, function(test) {
@@ -64,7 +64,12 @@ casper.test.begin('Test provider: ' + provider, 6, function(test) {
         this.test.assertEquals(json.id, orderId.toString(), 'Check orderId in response')
         if (provider !== 'nordea-plnet') {
           this.test.assertEquals(json.amount, 1.23, 'Check amount in response')
-          this.test.assertEquals(json.msg, msg, 'Check message in response')
+          if (provider !== 'ec') {
+            this.test.assertEquals(json.msg, msg, 'Check message in response')
+          }
+          else {
+            this.test.assert(true)
+          }
         }
         else {
           this.test.assert(true)

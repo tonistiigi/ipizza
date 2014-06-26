@@ -64,6 +64,14 @@ ipizza.provider(
   , certificate: lhv.bank_certificate
   })
 
+var ec = require('./keys/ipizza_test_ec')
+ipizza.provider(
+  { provider: 'ec'
+  , clientId: ec.client_id
+  , privateKey: ec.private_key
+  , certificate: ec.bank_certificate
+  })
+
 // Customer number: 111111    Password: 9999
 ipizza.provider(
   { provider: 'nordea'

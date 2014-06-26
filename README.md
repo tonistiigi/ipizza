@@ -2,7 +2,7 @@
 
 ### What?
 
-Node.js module for payment processing with Estonian (and other iPizza based) banks. It currently supports Swedbank, SEB, Sampo, Krediidipank, LHV and Nordea. Testing is provided by awesome [Pangalink.net](http://pangalink.net/) service.
+Node.js module for payment processing with Estonian (and other iPizza based) banks. It currently supports Swedbank, SEB, Sampo, Krediidipank, LHV, Nordea and Estcard. Testing is provided by awesome [Pangalink.net](http://pangalink.net/) service.
 
 ###Install
 

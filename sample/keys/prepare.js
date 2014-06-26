@@ -11,7 +11,8 @@ var defs = [
   {type: 'sampo', name: 'ipizza_test_sampo'},
   {type: 'krediidipank', name: 'ipizza_test_krediidipank'},
   {type: 'lhv', name: 'ipizza_test_lhv'},
-  {type: 'nordea', name: 'ipizza_test_nordea', algo: 'sha1'}
+  {type: 'nordea', name: 'ipizza_test_nordea', algo: 'sha1'},
+  {type: 'ec', name: 'ipizza_test_ec', return_url: 'http://localhost:4000/ec_fake_return'}
 ]
 
 function run() {

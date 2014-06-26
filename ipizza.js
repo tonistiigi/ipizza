@@ -218,7 +218,8 @@ ipizza.IpizzaBank = require(__dirname + '/providers/ipizzabank.js')
 , 'sampo'
 , 'krediidipank'
 , 'lhv'
-, 'nordea'].forEach(function (provider) {
+, 'nordea'
+, 'ec'].forEach(function (provider) {
   ipizza.define(provider, require(__dirname + '/providers/' + provider + '.js'))
 })
 
