@@ -6,6 +6,17 @@ var IpizzaBank = require('./ipizzabank')
 
 // http://www.estcard.ee/publicweb/files/ecomdevel/e-comDocENG.html
 
+var paddings = {
+    eamount: ['0', 12, true]
+  , ver: ['0', 3, true]
+  , feedBackUrl: [' ', 128, false]
+  , id: [' ', 10, false]
+  , msgdata: [' ', 40, false]
+  , actiontext: [' ', 40, false]
+  , respcode: ['0', 3, true]
+  , receipt_no: ['0', 6, true]
+}
+
 function EC (opt) {
   this.name = 'ec'
   IpizzaBank.apply(this, arguments)
@@ -33,7 +44,7 @@ EC.prototype.json = function (dateOverride) {
   params['ecuno'] = getEcuno(dt, this.get('id'))
 
   var amountInCents = Math.floor(parseFloat(this.get('amount') * 100))
-  params['eamount'] = pad(amountInCents, '0', 12, true)
+  params['eamount'] = amountInCents
   params['cur'] = this.get('curr')
   params['datetime'] = dt.format('YYYYMMDDhhmmss')
   params['charEncoding'] = 'UTF-8' // spec says this is int?
@@ -53,12 +64,7 @@ EC.prototype.genMac_ = function (params) {
 
   var pack = fields.reduce(function(memo, val) {
     var v = params[val]
-    if (val === 'feedBackUrl') {
-      v = pad(v, ' ', 128, false)
-    }
-    else if (val === 'id') {
-      v = pad(v, ' ', 10, false)
-    }
+    if (paddings[val]) v = pad.apply(v, paddings[val])
     memo += v
     return memo
   }, '')
@@ -79,16 +85,11 @@ EC.prototype.verify_ = function (body) {
   var pack = fields.reduce(function(memo, val) {
     var v = body[val]
 
-    if (val === 'msgdata' || val === 'actiontext') {
-      v = pad(v, ' ', 40, false)
+    if (val === 'id') {
+      v = self.get('clientId')
     }
-    else if (val === 'receipt_no') {
-      v = pad(v, '0', 6, true)
-    }
-    else if (val === 'id') {
-      // use conf. just in case
-      v = pad(self.get('clientId'), ' ', 10, false)
-    }
+
+    if (paddings[val]) v = pad.apply(v, paddings[val])
 
     memo += v
     return memo
@@ -179,14 +180,15 @@ function getEcuno(dt, id) {
   return dt.format('YYYYMM') + (sfx % 1e6)
 }
 
-function pad(s, pad, limit, front) {
-  s = s.toString()
+// this function is called with this = string
+function pad(char, limit, front) {
+  var s = this.toString()
   while (s.length < limit) {
     if (front) {
-      s = pad + s
+      s = char + s
     }
     else {
-      s += pad
+      s += char
     }
   }
   return s
