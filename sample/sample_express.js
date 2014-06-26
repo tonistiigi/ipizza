@@ -5,7 +5,7 @@ if (!require('./keys/prepare.js')()) return
 
 var app = express()
 
-app.use(express.bodyParser())
+app.use(express.urlencoded())
 
 var ipizza = require('../')
 
