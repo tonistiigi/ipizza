@@ -4,6 +4,7 @@ var Buffer = require('buffer').Buffer
   , iconv = require('iconv-lite')
   , S = require('string')
   , log = require('npmlog')
+  , formidable = require('formidable')
   , _ = require('lodash')._
 
 function IpizzaBank (opt) {
@@ -299,24 +300,23 @@ IpizzaBank.prototype.verify_ = function (body) {
   return verifier.verify(cert, body.VK_MAC || '', 'base64')
 }
 
-IpizzaBank.prototype.response = function (req, resp) {
-  var ipizza = require(__dirname + '/../ipizza.js')
-  var params = req.body
-  var self = this;
+IpizzaBank.prototype._parsePostRequest = function(req, next) {
+  if (req.body) {
+    return next(req.body)
+  }
 
-  if (!params) {
-    var data = ''
-    req.on('data', function (dt) {
-      data += dt.toString('utf8')
-    })
-    req.on('end', function () {
-      data = require('querystring').parse(data)
-      response(data)
-    })
-  }
-  else {
-    response(params)
-  }
+  var form = new formidable.IncomingForm()
+  form.parse(req, function(err, fields, files) {
+    next(err ? {} : fields)
+  })
+
+}
+
+IpizzaBank.prototype.response = function (req, resp) {
+  var ipizza = require(__dirname + '/..')
+  var self = this
+
+  this._parsePostRequest(req, response)
 
   function response (params) {
     try {

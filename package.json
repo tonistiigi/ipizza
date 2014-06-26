@@ -22,6 +22,7 @@
   "author": "Tõnis Tiigi <tonistiigi@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "formidable": "^1.0.14",
     "iconv-lite": "^0.2.11",
     "lodash": "^2.4.1",
     "moment": "^2.5.1",

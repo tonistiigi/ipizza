@@ -105,26 +105,11 @@ EC.prototype.verify_ = function (body) {
 
 EC.prototype.response = function (req, resp) {
   var ipizza = require(__dirname + '/..')
-  var params = req.body
   var self = this;
 
-  if (!params) {
-    // todo: replace this hack with formidable
-    var data = ''
-    req.on('data', function (dt) {
-      data += dt.toString('utf8')
-    })
-    req.on('end', function () {
-      data = require('querystring').parse(data)
-      response(data)
-    })
-  }
-  else {
-    response(params)
-  }
+  this._parsePostRequest(req, response)
 
   function response (params) {
-    console.log(params)
     try {
       log.verbose('resp body', params)
 
