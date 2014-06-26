@@ -72,6 +72,15 @@ ipizza.provider(
   , certificate: ec.bank_certificate
   })
 
+ipizza.provider(
+  { provider: 'ec'
+  , alias: 'ec-ipay'
+  , gateway: 'https://pos.estcard.ee/test-pos/servlet/iPAYServlet'
+  , privateKey: __dirname + '/keys/ec.ipay.test.privatekey.pem'
+  , certificate: __dirname + '/keys/ec.ipay.test.publickey.pem'
+  , clientId: '' // <- enter yours here
+  })
+
 // Customer number: 111111    Password: 9999
 ipizza.provider(
   { provider: 'nordea'
