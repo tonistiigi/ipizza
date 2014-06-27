@@ -46,7 +46,7 @@ EC.prototype.json = function (dateOverride) {
   var amountInCents = Math.floor(parseFloat(this.get('amount') * 100))
   params['eamount'] = amountInCents
   params['cur'] = this.get('curr')
-  params['datetime'] = dt.format('YYYYMMDDhhmmss')
+  params['datetime'] = dt.format('YYYYMMDDHHmmss')
   params['charEncoding'] = 'UTF-8' // spec says this is int?
   params['feedBackUrl'] = this.get('return') || ipizza.get('hostname') +
     ipizza.get('returnRoute').replace(':provider', this.get('provider'))
@@ -157,7 +157,7 @@ function parseEcuno(ecuno) {
 }
 
 function parseEcdate(date) {
-  return moment(date, 'YYYYMMDDhhmmss').format('DD.MM.YYYY')
+  return moment(date, 'YYYYMMDDHHmmss').format('DD.MM.YYYY')
 }
 
 function parseEamount(amount) {

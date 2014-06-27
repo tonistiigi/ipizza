@@ -5,6 +5,7 @@ describe('ec', function() {
   beforeEach(function() {
     var ipizza = require('../ipizza')
     ipizza.set('logLevel', 'error')
+    ipizza.set('hostname', 'http://my.fake.domain.com')
   })
   afterEach(function() {
     delete require.cache[require.resolve('../ipizza')]
@@ -39,9 +40,9 @@ describe('ec', function() {
     , msg: 'öäüõÖÄÜÕ'
     , amount: 10
     , encoding: 'utf8'
-    }).json('2014-06-26')
+    }).json('2014-06-26 12:00:00')
 
-    var result = '4a0a3c5706577add5de387d6f06fdebf8aa0d419830d2369b7d14b7860e893c1918a40ae3701ce3c9d83beb83f29dd2662e500590bbab683140bfe33d3ad7876b411a6cb6f75f9820e6b65b09df5a391c92bf2c2fe331701b916b7564b89ae12b8650db274765031f2740b6324d3749e43f3b80029fe0955d4b3b476c78fa155c06dfba243fa6413e91bbf8b741c0c0dfe28e3a3e8ac0e33780c348e919b32c7d0b96ec5c9c29a334640998abbe1e48b7d29c4692bb496940d264bf3b5da9814b8c04d8e828d2524c34b3d9dc0b76bca3b1a21174cc7a63aab2d60d8e6be10ef6bbb6e4c504f0755d5a23b9683ee0eec111d9215c7f0acde1b2eeafd690682d5'
+    var result = '6941442e04f6eff1984aea157074c15cc671ea97854c8717650bec1fbefa2874c520f320795901627ed6ccd8d14e7d14d609387a99ac414504c6e5270c2b0abe077689b2bbf5fc479977e3c533a5c88da34f1935d9b6a76d6a533bb949840d0742eef5d6eaa574cd5b70f98afd16ea9711cb3d080117a80f36cf5a1498f7bf2d9664a31b22a320142eb793457b15012fb56c55975234a60390719a7dbf4a7dc5a8aada2d92afd41abe7552bb25974ae4570b59f88fdc62169600afbb8491d56cc4592f141a59e83b738ced480777607c6f02790b74eee870983c6a7dc6fa1dd6d31c36cec5fbd57a146c6024c3dfa01cf0606a8379378b8552d590e1241c9d70'
 
     assert.strictEqual(json.mac, result)
   })
