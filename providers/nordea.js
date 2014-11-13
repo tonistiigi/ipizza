@@ -34,7 +34,7 @@ Nordea.prototype.json = function () {
     params.SOLOPMT_RCV_NAME = this.get('accountName')
   }
   params.SOLOPMT_LANGUAGE = this.get('lang') === 'EST' ? '4' : '3'
-  params.SOLOPMT_AMOUNT = this.get('amount')
+  params.SOLOPMT_AMOUNT = parseFloat(this.get('amount')).toFixed(2)
   params.SOLOPMT_REF = this.get('ref') || ipizza.makeRefNumber(this.get('id'))
   params.SOLOPMT_DATE = 'EXPRESS'
   params.SOLOPMT_MSG = this.get('msg')
