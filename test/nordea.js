@@ -105,7 +105,7 @@ describe('nordea', function() {
     , encoding: 'utf8'
     }).json()
 
-    var result = '2566E368D757D907A3E5291863D1F3F2AEC8442B'
+    var result = 'E9777B29C55ECB77CAB5DCFC19DD250DE646C446'
 
     assert.strictEqual(json.SOLOPMT_MAC, result)
   })
